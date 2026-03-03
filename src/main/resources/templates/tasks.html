@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Task Management</title>
+</head>
+<body>
+
+<h2>Add Task</h2>
+
+<form th:action="@{/tasks/save}" th:object="${task}" method="post">
+    <label>Name:</label>
+    <input type="text" th:field="*{name}" /><br/>
+	<div style="color:red" th:if="${#fields.hasErrors('name')}"  th:errors="*{name}"></div>
+
+    <label>Priority:</label>
+    <input type="number" th:field="*{priority}" /><br/>
+
+    <label>Start Time:</label>
+    <input type="datetime-local" th:field="*{startTime}" /><br/>
+
+    <label>End Time:</label>
+    <input type="datetime-local" th:field="*{endTime}" /><br/>
+
+    <label>Dependencies (comma separated IDs):</label>
+    <input type="text" th:field="*{dependencies}" /><br/><br/>
+
+    <button type="submit">Save Task</button>
+</form>
+
+<hr/>
+
+<h2>Task List</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Priority</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Dependencies</th>
+        <th>Action</th>
+    </tr>
+
+    <tr th:each="t : ${tasks}">
+        <td th:text="${t.id}"></td>
+        <td th:text="${t.name}"></td>
+        <td th:text="${t.priority}"></td>
+        <td th:text="${t.startTime}"></td>
+        <td th:text="${t.endTime}"></td>
+        <td th:text="${t.dependencies}"></td>
+        <td>
+            <a th:href="@{'/tasks/delete/' + ${t.id}}">Delete</a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
