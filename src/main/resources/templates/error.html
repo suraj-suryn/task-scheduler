@@ -2,13 +2,30 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        .error-box {
+            padding: 20px;
+            border: 1px solid #ff4d4d;
+            background-color: #ffe6e6;
+        }
+        h2 {
+            color: #cc0000;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Error Occurred</h2>
-<p style="color:red;" th:text="${errorMessage}"></p>
+<div class="error-box">
+    <h2 th:text="${errorTitle}">Error</h2>
+    <p th:text="${errorMessage}"></p>
+</div>
 
-<a href="/tasks">Go Back</a>
+<br>
+<a href="/tasks">⬅ Back to Task List</a>
 
 </body>
 </html>
