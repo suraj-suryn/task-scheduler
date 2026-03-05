@@ -6,6 +6,7 @@ import com.suraj.scheduler.repository.TaskRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -24,7 +25,8 @@ public class TaskSchedulerEngine {
 
         for (Task task : tasks) {
 
-            if (task.getStatus() == TaskStatus.PENDING) {
+            if (task.getStatus() == TaskStatus.PENDING &&
+                    task.getStartTime().isBefore(LocalDateTime.now())) {
 
                 System.out.println("Executing task: " + task.getName());
 
