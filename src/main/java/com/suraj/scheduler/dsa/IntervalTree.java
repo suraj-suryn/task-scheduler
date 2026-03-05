@@ -8,65 +8,85 @@ import com.suraj.scheduler.entity.Task;
 
 public class IntervalTree {
 
-    private class Node {
-        Task task;
-        LocalDateTime maxEnd;
-        Node left, right;
+	private class Node {
+		Task task;
+		LocalDateTime maxEnd;
+		Node left, right;
 
-        Node(Task task) {
-            this.task = task;
-            this.maxEnd = task.getEndTime();
-        }
-    }
+		Node(Task task) {
+			this.task = task;
+			this.maxEnd = task.getEndTime();
+		}
+	}
 
-    private Node root;
+	private Node root;
 
-    public void insert(Task task) {
-        root = insert(root, task);
-    }
+	public void insert(Task task) {
+		root = insert(root, task);
+	}
 
-    private Node insert(Node node, Task task) {
-        if (node == null) return new Node(task);
+	private Node insert(Node node, Task task) {
+		if (node == null)
+			return new Node(task);
 
-        if (task.getStartTime().isBefore(node.task.getStartTime())) {
-            node.left = insert(node.left, task);
-        } else {
-            node.right = insert(node.right, task);
-        }
+		if (task.getStartTime().isBefore(node.task.getStartTime())) {
+			node.left = insert(node.left, task);
+		} else {
+			node.right = insert(node.right, task);
+		}
 
-        if (node.maxEnd.isBefore(task.getEndTime())) node.maxEnd = task.getEndTime();
-        return node;
-    }
+		if (node.maxEnd.isBefore(task.getEndTime()))
+			node.maxEnd = task.getEndTime();
+		return node;
+	}
 
-    public boolean isOverlapping(Task task) {
-        return isOverlapping(root, task);
-    }
+	public boolean isOverlapping(Task task) {
+		return isOverlapping(root, task);
+	}
 
-    private boolean isOverlapping(Node node, Task task) {
-        if (node == null) return false;
+	private boolean isOverlapping(Node node, Task task) {
+		if (node == null)
+			return false;
 
-        if (overlap(node.task, task)) return true;
+		if (overlap(node.task, task))
+			return true;
 
-        if (node.left != null && node.left.maxEnd.isAfter(task.getStartTime()))
-            return isOverlapping(node.left, task);
+		if (node.left != null && node.left.maxEnd.isAfter(task.getStartTime()))
+			return isOverlapping(node.left, task);
 
-        return isOverlapping(node.right, task);
-    }
+		return isOverlapping(node.right, task);
+	}
 
-    private boolean overlap(Task a, Task b) {
-        return !a.getEndTime().isBefore(b.getStartTime()) && !b.getEndTime().isBefore(a.getStartTime());
-    }
+	private boolean overlap(Task a, Task b) {
+		return !a.getEndTime().isBefore(b.getStartTime()) && !b.getEndTime().isBefore(a.getStartTime());
+	}
 
-    public List<Task> getAllTasks() {
-        List<Task> result = new ArrayList<>();
-        inorder(root, result);
-        return result;
-    }
+	public List<Task> getAllTasks() {
+		List<Task> result = new ArrayList<>();
+		inorder(root, result);
+		return result;
+	}
 
-    private void inorder(Node node, List<Task> result) {
-        if (node == null) return;
-        inorder(node.left, result);
-        result.add(node.task);
-        inorder(node.right, result);
-    }
+	private void inorder(Node node, List<Task> result) {
+		if (node == null)
+			return;
+		inorder(node.left, result);
+		result.add(node.task);
+		inorder(node.right, result);
+	}
+
+	public boolean isOverlapping(LocalDateTime start, LocalDateTime end, List<Task> tasks) {
+
+		for (Task t : tasks) {
+
+			boolean overlap = start.isBefore(t.getEndTime()) && end.isAfter(t.getStartTime());
+
+			if (overlap) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }
