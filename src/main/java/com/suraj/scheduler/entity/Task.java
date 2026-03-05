@@ -1,21 +1,35 @@
 package com.suraj.scheduler.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tasks")
+@Getter
+@Setter
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Task name is required")
+    @NotBlank(message = "Task name cannot be empty")
     private String name;
+
+    @Min(value = 1, message = "Priority must be at least 1")
+    private int priority;
 
     @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
@@ -23,49 +37,8 @@ public class Task {
     @NotNull(message = "End time is required")
     private LocalDateTime endTime;
 
-    @NotBlank(message = "Description is required")
-    private String description;
+    private String dependencies;
 
-    public Task() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status = TaskStatus.PENDING;
 }
- 

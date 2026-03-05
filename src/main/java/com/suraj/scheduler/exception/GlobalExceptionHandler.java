@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -34,4 +35,14 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    @ExceptionHandler(InvalidTaskTimeException.class)
+    public String handleInvalidTaskTime(InvalidTaskTimeException ex, Model model) {
+
+        model.addAttribute("errorTitle", "Invalid Task Time");
+        model.addAttribute("errorMessage", ex.getMessage());
+
+        return "error";
+    }
+
 }
