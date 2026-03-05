@@ -1,13 +1,8 @@
 package com.suraj.scheduler.exception;
 
-public class TaskNotFoundException {
-	private String message;
+public class TaskNotFoundException extends RuntimeException {
 
-	public TaskNotFoundException(String message) {
-		this.message = message;
-	}
-
-	public String getMessage() {
-		return message;
-	}
+    public TaskNotFoundException(String message) {
+        super(message);
+    }
 }

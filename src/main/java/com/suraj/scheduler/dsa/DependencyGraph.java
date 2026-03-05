@@ -1,6 +1,14 @@
 package com.suraj.scheduler.dsa;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.suraj.scheduler.entity.Task;
 
 public class DependencyGraph {
 
@@ -54,4 +62,33 @@ public class DependencyGraph {
         result.add(id);
         return true;
     }
+    public boolean hasCycle(Task newTask, List<Task> tasks) {
+
+        if (newTask.getDependencies() == null || newTask.getDependencies().isEmpty()) {
+            return false;
+        }
+
+        String[] deps = newTask.getDependencies().split(",");
+
+        for (String dep : deps) {
+
+            Long depId = Long.parseLong(dep.trim());
+
+            if (depId.equals(newTask.getId())) {
+                return true;
+            }
+
+            for (Task t : tasks) {
+                if (t.getId().equals(depId) &&
+                        t.getDependencies() != null &&
+                        t.getDependencies().contains(String.valueOf(newTask.getId()))) {
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

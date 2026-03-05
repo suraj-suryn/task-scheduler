@@ -26,15 +26,15 @@ public class TaskController {
 	}
 
 	@PostMapping("/save")
-	public String saveTask(@Valid @ModelAttribute Task task, BindingResult result, Model model) {
+	public String saveTask(@Valid @ModelAttribute("task") Task task, BindingResult result, Model model) {
 
 		if (result.hasErrors()) {
 			model.addAttribute("tasks", taskService.getAllTasks());
-			return "tasks";
+			return "error";
 		}
 
 		taskService.saveTask(task);
-		return "redirect:/tasks";
+		return "redirect:/";
 	}
 
 	@GetMapping("/delete/{id}")

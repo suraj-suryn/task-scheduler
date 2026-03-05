@@ -2,12 +2,22 @@ package com.suraj.scheduler.dsa;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import com.suraj.scheduler.entity.Task;
 
 public class PriorityHeap {
 
     private List<Task> heap;
+    
+
+    private final PriorityQueue<Task> heap =
+            new PriorityQueue<>((a, b) -> b.getPriority() - a.getPriority());
+
+
+    public Task getNextTask() {
+        return heap.poll();
+    }
 
     public PriorityHeap() {
         heap = new ArrayList<>();
