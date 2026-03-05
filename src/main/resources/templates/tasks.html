@@ -2,75 +2,132 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Task Management</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            margin:40px;
+        }
+
+        table{
+            border-collapse: collapse;
+            width:100%;
+        }
+
+        table,th,td{
+            border:1px solid #ccc;
+            padding:8px;
+        }
+
+        th{
+            background:#f5f5f5;
+        }
+
+        .error{
+            color:red;
+            font-size:13px;
+        }
+
+        .success{
+            color:green;
+        }
+    </style>
+
 </head>
 <body>
 
-<h2>Add Task</h2>
+<h2>Task Management</h2>
+
+<hr>
+
+<h3>Add Task</h3>
 
 <form th:action="@{/tasks/save}" th:object="${task}" method="post">
 
-    <label>Name:</label>
+    <label>Task Name</label><br>
     <input type="text" th:field="*{name}" />
-    <div style="color:red"
+    <div class="error"
          th:if="${#fields.hasErrors('name')}"
-         th:errors="*{name}"></div>
-    <br/>
+         th:errors="*{name}">
+    </div>
+    <br>
 
-    <label>Priority:</label>
+    <label>Priority</label><br>
     <input type="number" th:field="*{priority}" />
-    <div style="color:red"
+    <div class="error"
          th:if="${#fields.hasErrors('priority')}"
-         th:errors="*{priority}"></div>
-    <br/>
+         th:errors="*{priority}">
+    </div>
+    <br>
 
-    <label>Start Time:</label>
+    <label>Start Time</label><br>
     <input type="datetime-local" th:field="*{startTime}" />
-    <div style="color:red"
+    <div class="error"
          th:if="${#fields.hasErrors('startTime')}"
-         th:errors="*{startTime}"></div>
-    <br/>
+         th:errors="*{startTime}">
+    </div>
+    <br>
 
-    <label>End Time:</label>
+    <label>End Time</label><br>
     <input type="datetime-local" th:field="*{endTime}" />
-    <div style="color:red"
+    <div class="error"
          th:if="${#fields.hasErrors('endTime')}"
-         th:errors="*{endTime}"></div>
-    <br/>
+         th:errors="*{endTime}">
+    </div>
+    <br>
 
-    <label>Dependencies (comma separated IDs):</label>
+    <label>Dependencies (comma separated task IDs)</label><br>
     <input type="text" th:field="*{dependencies}" />
-    <br/><br/>
+    <br><br>
 
     <button type="submit">Save Task</button>
+
 </form>
 
-<hr/>
+<hr>
 
-<h2>Task List</h2>
+<h3>Task List</h3>
 
-<table border="1">
+<table>
+
     <tr>
         <th>ID</th>
         <th>Name</th>
         <th>Priority</th>
-        <th>Start</th>
-        <th>End</th>
+        <th>Start Time</th>
+        <th>End Time</th>
         <th>Dependencies</th>
+        <th>Status</th>
         <th>Action</th>
     </tr>
 
     <tr th:each="t : ${tasks}">
+
         <td th:text="${t.id}"></td>
+
         <td th:text="${t.name}"></td>
+
         <td th:text="${t.priority}"></td>
+
         <td th:text="${t.startTime}"></td>
+
         <td th:text="${t.endTime}"></td>
+
         <td th:text="${t.dependencies}"></td>
+
+        <td th:text="${t.status}"></td>
+
         <td>
             <a th:href="@{'/tasks/delete/' + ${t.id}}">Delete</a>
         </td>
+
     </tr>
+
 </table>
+
+<br>
+
+<a href="/">⬅ Back To Home</a>
 
 </body>
 </html>

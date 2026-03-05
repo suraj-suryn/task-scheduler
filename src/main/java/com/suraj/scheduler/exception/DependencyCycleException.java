@@ -1,13 +1,9 @@
 package com.suraj.scheduler.exception;
 
-public class DependencyCycleException {
-		private String message;
 
-	public DependencyCycleException(String message) {
-		this.message = message;
-	}
+public class DependencyCycleException extends RuntimeException {
 
-	public String getMessage() {
-		return message;
-	}
+    public DependencyCycleException(String message) {
+        super(message);
+    }
 }

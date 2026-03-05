@@ -1,16 +1,10 @@
 package com.suraj.scheduler.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.suraj.scheduler.common.ApiResponse;
 import com.suraj.scheduler.entity.Task;
 import com.suraj.scheduler.service.TaskService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -23,12 +17,35 @@ public class TaskRestController {
     }
 
     @GetMapping
-    public ApiResponse<List<Task>> getAllTasks() {
-        return ApiResponse.success(taskService.getAllTasks());
+    public List<Task> getAllTasks() {
+        return taskService.getAllTasks();
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    @GetMapping("/dependencies")
+    public Map<Long, List<Long>> getDependencyGraph() {
+
+        List<Task> tasks = taskService.getAllTasks();
+
+        Map<Long, List<Long>> graph = new HashMap<>();
+
+        for (Task task : tasks) {
+
+            if (task.getDependencies() == null || task.getDependencies().isEmpty()) {
+                continue;
+            }
+
+            String[] deps = task.getDependencies().split(",");
+
+            List<Long> depIds = new ArrayList<>();
+
+            for (String dep : deps) {
+                depIds.add(Long.parseLong(dep.trim()));
+            }
+
+            graph.put(task.getId(), depIds);
+        }
+
+        return graph;
     }
+    
 }
