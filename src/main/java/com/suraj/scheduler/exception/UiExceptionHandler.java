@@ -4,27 +4,34 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice(basePackages = "com.suraj.scheduler.controller")
-public class UiExceptionHandler {
+@ControllerAdvice(assignableTypes = com.suraj.scheduler.controller.TaskController.class)
+public class UIExceptionHandler {
 
-    @ExceptionHandler(TaskNotFoundException.class)
-    public String handleTaskNotFound(TaskNotFoundException ex, Model model) {
-        model.addAttribute("errorTitle", "Task Not Found");
+    @ExceptionHandler(InvalidTaskTimeException.class)
+    public String handleInvalidTaskTime(InvalidTaskTimeException ex, Model model) {
+
+        model.addAttribute("errorTitle", "Invalid Task Time");
         model.addAttribute("errorMessage", ex.getMessage());
+
         return "error";
     }
 
     @ExceptionHandler(TaskOverlapException.class)
-    public String handleTaskOverlap(TaskOverlapException ex, Model model) {
-        model.addAttribute("errorTitle", "Task Overlap Error");
+    public String handleOverlap(TaskOverlapException ex, Model model) {
+
+        model.addAttribute("errorTitle", "Task Overlap");
         model.addAttribute("errorMessage", ex.getMessage());
+
         return "error";
     }
 
-    @ExceptionHandler(Exception.class)
-    public String handleGeneralException(Exception ex, Model model) {
-        model.addAttribute("errorTitle", "Unexpected Error");
-        model.addAttribute("errorMessage", "Something went wrong. Please try again.");
+    @ExceptionHandler(DependencyCycleException.class)
+    public String handleDependency(DependencyCycleException ex, Model model) {
+
+        model.addAttribute("errorTitle", "Dependency Error");
+        model.addAttribute("errorMessage", ex.getMessage());
+
         return "error";
     }
+
 }
