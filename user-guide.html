@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Task Scheduler — User Guide</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1e293b; background: #fff; }
+  .cover { page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; text-align: center; padding: 40px; }
+  .cover .logo { width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 24px; }
+  .cover h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+  .cover p { font-size: 16px; opacity: 0.85; margin-bottom: 40px; }
+  .cover .meta { font-size: 12px; opacity: 0.6; margin-top: auto; }
+  .cover .url { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 12px 24px; font-size: 14px; font-weight: 600; margin-top: 16px; }
+
+  .page { padding: 40px 48px; max-width: 800px; margin: 0 auto; }
+  h2 { font-size: 22px; font-weight: 800; color: #4f46e5; margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 2px solid #e0e7ff; display: flex; align-items: center; gap: 10px; }
+  h2 .num { background: #4f46e5; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  h3 { font-size: 14px; font-weight: 700; color: #334155; margin: 16px 0 8px; }
+  p { line-height: 1.7; color: #475569; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { line-height: 1.8; color: #475569; }
+  li strong { color: #1e293b; }
+
+  .step-box { background: #f8fafc; border-left: 4px solid #4f46e5; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; }
+  .step-box ol { margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+  th { background: #4f46e5; color: white; text-align: left; padding: 8px 12px; font-weight: 600; }
+  td { padding: 7px 12px; border-bottom: 1px solid #e2e8f0; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-yellow { background: #fef9c3; color: #854d0e; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+
+  .callout { border-radius: 8px; padding: 12px 16px; margin: 12px 0; font-size: 12px; }
+  .callout-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+  .callout-warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+  .callout-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+
+  code { background: #f1f5f9; color: #7c3aed; padding: 1px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; }
+  pre { background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 8px; font-size: 11px; line-height: 1.6; overflow-x: auto; margin: 12px 0; font-family: 'Courier New', monospace; }
+
+  .toc { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px 28px; margin: 24px 0; page-break-after: always; }
+  .toc h2 { border: none; font-size: 18px; margin-top: 0; }
+  .toc ol { padding-left: 20px; }
+  .toc li { padding: 4px 0; color: #4f46e5; font-weight: 500; }
+  .toc li span { color: #94a3b8; font-weight: 400; font-size: 11px; margin-left: 8px; }
+
+  .validation-table th { background: #7c3aed; }
+
+  @media print {
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2, .callout, table th, pre, .step-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2 { page-break-after: avoid; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="logo">📋</div>
+  <h1>Task Scheduler</h1>
+  <p>Work Tracker &amp; Project Manager</p>
+  <p style="font-size:13px; opacity:0.75;">Complete User Guide — All Features</p>
+  <div class="url">🌐 task-scheduler-production-39cb.up.railway.app</div>
+  <div class="meta">Built with Spring Boot 3 · Tailwind CSS · Spring Security<br/>Version 1.0 · June 2026</div>
+</div>
+
+<div class="page">
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>📑 Table of Contents</h2>
+  <ol>
+    <li>Registration &amp; Login <span>— Account creation with validation</span></li>
+    <li>Dashboard <span>— Stats, upcoming &amp; completed tasks</span></li>
+    <li>Categories <span>— Color-coded task organization</span></li>
+    <li>Creating Tasks <span>— Full task form walkthrough</span></li>
+    <li>Managing Tasks <span>— Search, filter, edit, delete</span></li>
+    <li>Recurring Tasks <span>— Automatic task scheduling</span></li>
+    <li>Task Dependencies <span>— Dependency graph &amp; cycle detection</span></li>
+    <li>Admin Portal <span>— User management &amp; system overview</span></li>
+    <li>REST API <span>— Developer reference</span></li>
+    <li>Registration Validation Reference <span>— All rules explained</span></li>
+  </ol>
+</div>
+
+<!-- SECTION 1 -->
+<h2><span class="num">1</span> Registration &amp; Login</h2>
+
+<h3>Creating an Account</h3>
+<div class="step-box">
+  <ol>
+    <li>Go to <code>/register</code> or click <strong>"Create one"</strong> on the login page</li>
+    <li>Fill in all four fields: Username, Email, Password, Confirm Password</li>
+    <li>Click <strong>Register</strong></li>
+    <li>On success → redirected to login with a confirmation message</li>
+    <li>Login with your new credentials</li>
+  </ol>
+</div>
+
+<h3>Registration Validation Rules</h3>
+<table class="validation-table">
+  <tr><th>Field</th><th>Rule</th><th>Error Message</th></tr>
+  <tr><td><strong>Username</strong></td><td>Required, 3–30 characters</td><td>"Username must be 3-30 characters"</td></tr>
+  <tr><td><strong>Username</strong></td><td>Must be unique (not already taken)</td><td>"Username already taken."</td></tr>
+  <tr><td><strong>Email</strong></td><td>Required, valid email format</td><td>"Enter a valid email address"</td></tr>
+  <tr><td><strong>Email</strong></td><td>Must be unique (one account per email)</td><td>"Email already registered."</td></tr>
+  <tr><td><strong>Password</strong></td><td>Required, minimum 6 characters</td><td>"Password must be at least 6 characters"</td></tr>
+  <tr><td><strong>Confirm Password</strong></td><td>Must exactly match Password</td><td>"Passwords do not match."</td></tr>
+</table>
+
+<div class="callout callout-info">
+  <strong>ℹ️ Note:</strong> All validation errors are shown inline on the registration form — the page does not navigate away. Passwords are stored as BCrypt hashes (never plain text).
+</div>
+
+<h3>Default Admin Account</h3>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Username</td><td><code>admin</code></td></tr>
+  <tr><td>Password</td><td><code>admin123</code></td></tr>
+  <tr><td>Role</td><td><span class="badge badge-red">ROLE_ADMIN</span></td></tr>
+</table>
+<div class="callout callout-warn">
+  <strong>⚠️ Important:</strong> Change the admin password immediately after first login via Admin Portal → Manage Users.
+</div>
+
+<!-- SECTION 2 -->
+<h2><span class="num">2</span> Dashboard</h2>
+
+<p>The dashboard at <code>/dashboard</code> is your home screen after login. It gives an instant overview of all your tasks.</p>
+
+<h3>Stat Cards</h3>
+<table>
+  <tr><th>Card</th><th>What it shows</th></tr>
+  <tr><td><span class="badge badge-blue">Total</span></td><td>All tasks assigned to you</td></tr>
+  <tr><td><span class="badge badge-yellow">Pending</span></td><td>Tasks not yet started</td></tr>
+  <tr><td><span class="badge badge-blue">Running</span></td><td>Tasks currently in progress</td></tr>
+  <tr><td><span class="badge badge-green">Completed</span></td><td>Tasks marked as done</td></tr>
+  <tr><td><span class="badge badge-red">Failed</span></td><td>Tasks marked as failed</td></tr>
+  <tr><td><span class="badge badge-red">Overdue</span></td><td>Tasks whose end time has passed and are not completed</td></tr>
+</table>
+
+<h3>Panels</h3>
+<ul>
+  <li><strong>Upcoming Tasks</strong> — Next 5 tasks ordered by start time</li>
+  <li><strong>Recently Completed</strong> — Last 5 tasks completed</li>
+</ul>
+
+<h3>Quick Actions</h3>
+<ul>
+  <li><strong>+ New Task</strong> — navigates to the task creation form</li>
+  <li><strong>Manage Categories</strong> — navigates to categories page</li>
+</ul>
+
+<div class="callout callout-info">
+  <strong>Admin view:</strong> Admins see stats for ALL users across the system, not just their own tasks.
+</div>
+
+<!-- SECTION 3 -->
+<h2><span class="num">3</span> Categories</h2>
+
+<p>Categories let you organize tasks by color-coded groups (e.g. "Work", "Personal", "Urgent").</p>
+
+<div class="step-box">
+  <ol>
+    <li>Click <strong>Categories</strong> in the left sidebar</li>
+    <li>Enter a category name in the input field</li>
+    <li>Click the color swatch to pick a color (hex color picker)</li>
+    <li>Click <strong>Add Category</strong></li>
+    <li>Your category appears as a colored card below</li>
+  </ol>
+</div>
+
+<h3>Deleting a Category</h3>
+<ul>
+  <li>Click the <strong>✕</strong> button on any category card</li>
+  <li>The category is removed (existing tasks keep their category reference)</li>
+</ul>
+
+<div class="callout callout-info">
+  <strong>Tip:</strong> Create categories before creating tasks — you can then assign tasks to them from the task form.
+</div>
+
+<!-- SECTION 4 -->
+<div class="page-break"></div>
+<h2><span class="num">4</span> Creating a Task</h2>
+
+<div class="step-box">
+  <ol>
+    <li>Click <strong>My Tasks</strong> in the sidebar</li>
+    <li>Click the <strong>+ Add Task</strong> button (top right)</li>
+    <li>A modal dialog opens — fill in the fields</li>
+    <li>Click <strong>Save Task</strong></li>
+    <li>A <span class="badge badge-green">green toast</span> confirms the task was saved</li>
+  </ol>
+</div>
+
+<h3>Task Form Fields</h3>
+<table>
+  <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+  <tr><td><strong>Task Name</strong></td><td>Yes</td><td>Short descriptive title</td></tr>
+  <tr><td><strong>Description</strong></td><td>No</td><td>Longer details about the task</td></tr>
+  <tr><td><strong>Priority</strong></td><td>Yes</td><td>Number 1–10 (10 = highest). Stored in a Max-Heap internally.</td></tr>
+  <tr><td><strong>Status</strong></td><td>Yes</td><td>PENDING / RUNNING / COMPLETED / FAILED</td></tr>
+  <tr><td><strong>Start Time</strong></td><td>Yes</td><td>When the task begins (date &amp; time picker)</td></tr>
+  <tr><td><strong>End Time</strong></td><td>Yes</td><td>When the task ends — must be after start time</td></tr>
+  <tr><td><strong>Category</strong></td><td>No</td><td>Pick from your created categories</td></tr>
+  <tr><td><strong>Recurrence</strong></td><td>No</td><td>NONE / DAILY / WEEKLY / MONTHLY</td></tr>
+  <tr><td><strong>Recurrence End Date</strong></td><td>Only if recurring</td><td>Stop auto-creating after this date</td></tr>
+  <tr><td><strong>Dependencies</strong></td><td>No</td><td>Comma-separated IDs of tasks that must complete first</td></tr>
+</table>
+
+<h3>Automatic Checks on Save</h3>
+<ul>
+  <li><strong>Overlap Detection</strong> — If another task already occupies the same time slot, save is blocked with an error toast. Uses an Interval Tree (O(log n)).</li>
+  <li><strong>Cycle Detection</strong> — If adding the dependency would create a circular chain (A→B→C→A), save is blocked. Uses DFS graph traversal.</li>
+</ul>
+
+<!-- SECTION 5 -->
+<h2><span class="num">5</span> Managing Tasks</h2>
+
+<h3>Task List Page (<code>/tasks</code>)</h3>
+<table>
+  <tr><th>Action</th><th>How to do it</th></tr>
+  <tr><td>Search tasks</td><td>Type in the search box — filters by name or description instantly</td></tr>
+  <tr><td>Filter by status</td><td>Use the <strong>Status</strong> dropdown (All / Pending / Running / Completed / Failed)</td></tr>
+  <tr><td>Filter by category</td><td>Use the <strong>Category</strong> dropdown</td></tr>
+  <tr><td>Edit a task</td><td>Click the ✏️ pencil icon on any task row</td></tr>
+  <tr><td>Delete a task</td><td>Click the 🗑️ trash icon on any task row</td></tr>
+</table>
+
+<h3>Task Status Flow</h3>
+<p style="text-align:center; padding: 8px 0;">
+  <span class="badge badge-yellow">PENDING</span>
+  &nbsp;→&nbsp;
+  <span class="badge badge-blue">RUNNING</span>
+  &nbsp;→&nbsp;
+  <span class="badge badge-green">COMPLETED</span>
+  &nbsp;&nbsp;or&nbsp;&nbsp;
+  <span class="badge badge-red">FAILED</span>
+</p>
+<p>The scheduler automatically transitions tasks to COMPLETED when their end time passes.</p>
+
+<!-- SECTION 6 -->
+<h2><span class="num">6</span> Recurring Tasks</h2>
+
+<p>Recurring tasks automatically create the next occurrence when the current one is completed.</p>
+
+<div class="step-box">
+  <ol>
+    <li>In the task form, set <strong>Recurrence</strong> to Daily, Weekly, or Monthly</li>
+    <li>Set a <strong>Recurrence End Date</strong> (the last date a new occurrence will be created)</li>
+    <li>Save the task normally</li>
+    <li>When the scheduler marks it complete, a new task is created automatically with the next date shifted by the recurrence interval</li>
+  </ol>
+</div>
+
+<table>
+  <tr><th>Recurrence Type</th><th>Next occurrence created</th></tr>
+  <tr><td>DAILY</td><td>Start + 1 day, End + 1 day</td></tr>
+  <tr><td>WEEKLY</td><td>Start + 7 days, End + 7 days</td></tr>
+  <tr><td>MONTHLY</td><td>Start + 1 month, End + 1 month</td></tr>
+</table>
+
+<div class="callout callout-info">
+  <strong>ℹ️ Note:</strong> The scheduler runs every 60 seconds. Tasks are auto-completed only when their end time is in the past.
+</div>
+
+<!-- SECTION 7 -->
+<h2><span class="num">7</span> Task Dependencies</h2>
+
+<p>You can specify that a task depends on other tasks being completed first.</p>
+
+<div class="step-box">
+  <ol>
+    <li>Find the task IDs you want as dependencies (shown in the task list table)</li>
+    <li>In the task form's <strong>Dependencies</strong> field, enter comma-separated IDs: e.g. <code>1,3,5</code></li>
+    <li>The system checks for circular dependencies automatically</li>
+  </ol>
+</div>
+
+<h3>Rules</h3>
+<ul>
+  <li>Dependencies are stored as a directed graph (adjacency list)</li>
+  <li>If A depends on B, then B must complete before A</li>
+  <li>Circular chains like A→B→C→A are rejected at save time with an error</li>
+</ul>
+
+<!-- SECTION 8 -->
+<div class="page-break"></div>
+<h2><span class="num">8</span> Admin Portal</h2>
+
+<p>Only users with <span class="badge badge-red">ROLE_ADMIN</span> can access <code>/admin</code>. Regular users get a 403 error.</p>
+
+<h3>Admin Dashboard (<code>/admin</code>)</h3>
+<ul>
+  <li>System-wide stats: total users, all tasks, pending, completed, failed, overdue</li>
+  <li>Quick links to Manage Users and Manage All Tasks</li>
+</ul>
+
+<h3>Manage Users (<code>/admin/users</code>)</h3>
+<table>
+  <tr><th>Action</th><th>How</th></tr>
+  <tr><td>View all users</td><td>Full table with username, email, role, status, join date</td></tr>
+  <tr><td>Change role</td><td>Use the Role dropdown (User ↔ Admin) — auto-submits on change</td></tr>
+  <tr><td>Enable / Disable account</td><td>Click the Enable/Disable toggle button — disabled users cannot login</td></tr>
+</table>
+
+<h3>Manage All Tasks (<code>/admin/tasks</code>)</h3>
+<table>
+  <tr><th>Action</th><th>How</th></tr>
+  <tr><td>View every user's tasks</td><td>Full task table showing which user owns each task</td></tr>
+  <tr><td>Search tasks</td><td>Type in the search box</td></tr>
+  <tr><td>Filter by status</td><td>Use the Status dropdown</td></tr>
+  <tr><td>Delete any task</td><td>Click the 🗑️ delete icon on any row</td></tr>
+</table>
+
+<div class="callout callout-warn">
+  <strong>⚠️ Warning:</strong> Deleting a task from the admin panel is permanent and cannot be undone.
+</div>
+
+<!-- SECTION 9 -->
+<h2><span class="num">9</span> REST API</h2>
+
+<p>The API is available for developers to integrate or automate task management. All endpoints require authentication (same session cookie as the web UI). All responses follow the format:</p>
+<pre>{ "success": true, "data": { ... } }</pre>
+
+<h3>Endpoints</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+  <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/tasks</code></td><td>List your tasks (supports <code>?search=&status=&categoryId=</code>)</td></tr>
+  <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/tasks</code></td><td>Create a new task</td></tr>
+  <tr><td><span class="badge badge-yellow">PUT</span></td><td><code>/api/tasks/{id}</code></td><td>Update a task fully</td></tr>
+  <tr><td><span class="badge badge-red">DELETE</span></td><td><code>/api/tasks/{id}</code></td><td>Delete a task</td></tr>
+  <tr><td><span class="badge badge-purple">PATCH</span></td><td><code>/api/tasks/{id}/status</code></td><td>Update status only — body: <code>{"status":"COMPLETED"}</code></td></tr>
+  <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/tasks/dependencies</code></td><td>Get dependency graph as adjacency map</td></tr>
+  <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/dashboard/stats</code></td><td>Dashboard statistics as JSON</td></tr>
+</table>
+
+<h3>Example — Create Task</h3>
+<pre>POST /api/tasks
+Content-Type: application/json
+
+{
+  "name": "Write report",
+  "priority": 8,
+  "status": "PENDING",
+  "startTime": "2026-06-10T09:00",
+  "endTime": "2026-06-10T11:00"
+}</pre>
+
+<!-- SECTION 10 -->
+<h2><span class="num">10</span> Registration Validation — Full Reference</h2>
+
+<p>All validation runs server-side. Errors are shown inline without leaving the page.</p>
+
+<table class="validation-table">
+  <tr><th>Field</th><th>Validation Type</th><th>Rule</th><th>Error Shown</th></tr>
+  <tr><td>Username</td><td>@NotBlank</td><td>Cannot be empty</td><td>"Username is required"</td></tr>
+  <tr><td>Username</td><td>@Size</td><td>3 to 30 characters</td><td>"Username must be 3-30 characters"</td></tr>
+  <tr><td>Username</td><td>DB Unique</td><td>Not already registered</td><td>"Username already taken."</td></tr>
+  <tr><td>Email</td><td>@NotBlank</td><td>Cannot be empty</td><td>"Email is required"</td></tr>
+  <tr><td>Email</td><td>@Email</td><td>Must be valid format (x@x.x)</td><td>"Enter a valid email address"</td></tr>
+  <tr><td>Email</td><td>DB Unique</td><td>Not already registered</td><td>"Email already registered."</td></tr>
+  <tr><td>Password</td><td>@NotBlank</td><td>Cannot be empty</td><td>"Password is required"</td></tr>
+  <tr><td>Password</td><td>@Size</td><td>Minimum 6 characters</td><td>"Password must be at least 6 characters"</td></tr>
+  <tr><td>Confirm Password</td><td>@NotBlank</td><td>Cannot be empty</td><td>"Please confirm your password"</td></tr>
+  <tr><td>Confirm Password</td><td>Match check</td><td>Must equal Password exactly</td><td>"Passwords do not match."</td></tr>
+</table>
+
+<div class="callout callout-success">
+  <strong>✅ Security:</strong> Passwords are never stored in plain text. BCrypt hashing with a cost factor of 12 is applied before saving to the database.
+</div>
+
+<br/><br/>
+<div style="text-align:center; color:#94a3b8; font-size:11px; border-top:1px solid #e2e8f0; padding-top:16px; margin-top:24px;">
+  Task Scheduler — Work Tracker &amp; Project Manager &nbsp;|&nbsp; Built with Spring Boot 3 &nbsp;|&nbsp; June 2026
+</div>
+
+</div><!-- end .page -->
+</body>
+</html>

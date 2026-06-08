@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Verification — Task Scheduler</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center p-4">
+
+<div class="w-full max-w-md text-center">
+
+  <!-- Logo -->
+  <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl shadow-lg mb-6">
+    <i class="fa-solid fa-calendar-check text-white text-2xl"></i>
+  </div>
+
+  <!-- Success -->
+  <div th:if="${success}" class="bg-white rounded-2xl shadow-xl p-10">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+      <i class="fa-solid fa-circle-check text-green-500 text-3xl"></i>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Email Verified!</h1>
+    <p class="text-gray-500 text-sm mb-1">Welcome, <span class="font-semibold text-indigo-600" th:text="${username}">User</span>!</p>
+    <p class="text-gray-400 text-sm mb-6">Your account is now active. You can log in.</p>
+    <a th:href="@{/login?verified=true}"
+       class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg transition text-sm">
+      <i class="fa-solid fa-right-to-bracket mr-2"></i>Go to Login
+    </a>
+  </div>
+
+  <!-- Failure -->
+  <div th:unless="${success}" class="bg-white rounded-2xl shadow-xl p-10">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+      <i class="fa-solid fa-circle-xmark text-red-500 text-3xl"></i>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Verification Failed</h1>
+    <p class="text-gray-500 text-sm mb-6" th:text="${message}">Invalid or expired link.</p>
+    <a th:href="@{/register}"
+       class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg transition text-sm">
+      <i class="fa-solid fa-user-plus mr-2"></i>Register Again
+    </a>
+  </div>
+
+</div>
+</body>
+</html>

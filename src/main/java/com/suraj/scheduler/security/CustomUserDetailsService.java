@@ -26,7 +26,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
-                true, true, true,
+                true,
+                true,
+                user.isEmailVerified(),   // credentialsNonExpired = email must be verified
                 List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
     }

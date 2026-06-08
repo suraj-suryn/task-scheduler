@@ -53,6 +53,22 @@ public class NotificationServiceImpl implements NotificationService {
         sendEmail(email, subject, body);
     }
 
+    @Override
+    public boolean sendVerificationEmail(String toEmail, String username, String verificationUrl) {
+        if (mailSender.isEmpty() || fromEmail.isBlank()) {
+            log.warn("[Notification] SMTP not configured — skipping verification email for {}. Auto-verifying.", username);
+            return false;
+        }
+        String subject = "[Task Scheduler] Verify your email address";
+        String body = "Hi " + username + ",\n\n"
+                + "Welcome to Task Scheduler! Please verify your email by clicking the link below:\n\n"
+                + verificationUrl + "\n\n"
+                + "This link will activate your account.\n\n"
+                + "If you did not register, ignore this email.\n\n— Task Scheduler";
+        sendEmail(toEmail, subject, body);
+        return true;
+    }
+
     private void sendEmail(String to, String subject, String body) {
         if (mailSender.isEmpty() || fromEmail.isBlank()) {
             log.warn("[Notification] Email not configured — skipping email to {}. Subject: {}", to, subject);

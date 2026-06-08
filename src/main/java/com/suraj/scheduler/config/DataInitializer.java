@@ -26,6 +26,7 @@ public class DataInitializer {
             admin.setEmail("admin@taskscheduler.local");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole(UserRole.ROLE_ADMIN);
+            admin.setEmailVerified(true);  // admin is pre-verified
             userRepository.save(admin);
 
             System.out.println("============================================================");

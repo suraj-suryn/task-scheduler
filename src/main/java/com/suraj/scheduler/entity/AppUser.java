@@ -37,5 +37,9 @@ public class AppUser {
 
     private boolean enabled = true;
 
+    private boolean emailVerified = false;
+
+    private String verificationToken;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 }
