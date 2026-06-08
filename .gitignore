@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# H2 persistent database files — do not commit
+data/
+
 ### STS ###
 .apt_generated
 .classpath

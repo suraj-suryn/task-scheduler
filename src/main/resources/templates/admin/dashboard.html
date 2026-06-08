@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Admin Dashboard', ~{::main-content})}"
+      lang="en">
+<head><title>Admin</title></head>
+<body>
+<th:block th:fragment="main-content">
+
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900"><i class="fa-solid fa-shield-halved text-red-500 mr-2"></i>Admin Portal</h1>
+    <p class="text-gray-500 text-sm mt-1">System-wide overview and management</p>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <p class="text-xs text-gray-400 font-medium uppercase">Users</p>
+      <p class="text-3xl font-bold text-indigo-600 mt-1" th:text="${totalUsers}">0</p>
+      <i class="fa-solid fa-users text-indigo-300 text-sm mt-2 block"></i>
+    </div>
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <p class="text-xs text-gray-400 font-medium uppercase">All Tasks</p>
+      <p class="text-3xl font-bold text-gray-700 mt-1" th:text="${totalTasks}">0</p>
+      <i class="fa-solid fa-layer-group text-gray-300 text-sm mt-2 block"></i>
+    </div>
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+      <p class="text-xs text-blue-500 font-medium uppercase">Pending</p>
+      <p class="text-3xl font-bold text-blue-600 mt-1" th:text="${pendingTasks}">0</p>
+      <i class="fa-solid fa-clock text-blue-200 text-sm mt-2 block"></i>
+    </div>
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-green-100">
+      <p class="text-xs text-green-600 font-medium uppercase">Completed</p>
+      <p class="text-3xl font-bold text-green-600 mt-1" th:text="${completedTasks}">0</p>
+      <i class="fa-solid fa-circle-check text-green-200 text-sm mt-2 block"></i>
+    </div>
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-red-100">
+      <p class="text-xs text-red-500 font-medium uppercase">Failed</p>
+      <p class="text-3xl font-bold text-red-500 mt-1" th:text="${failedTasks}">0</p>
+      <i class="fa-solid fa-circle-xmark text-red-200 text-sm mt-2 block"></i>
+    </div>
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
+      <p class="text-xs text-orange-500 font-medium uppercase">Overdue</p>
+      <p class="text-3xl font-bold text-orange-500 mt-1" th:text="${overdueTasks}">0</p>
+      <i class="fa-solid fa-triangle-exclamation text-orange-200 text-sm mt-2 block"></i>
+    </div>
+  </div>
+
+  <!-- Quick links -->
+  <div class="flex flex-wrap gap-3">
+    <a th:href="@{/admin/users}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-users"></i>Manage Users
+    </a>
+    <a th:href="@{/admin/tasks}" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-list-check text-indigo-500"></i>Manage All Tasks
+    </a>
+    <a th:href="@{/h2-console}" target="_blank" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-database text-gray-400"></i>H2 Console
+    </a>
+  </div>
+
+</th:block>
+</body>
+</html>

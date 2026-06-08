@@ -1,20 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Smart Task Scheduler</title>
+  <meta http-equiv="refresh" th:content="'0;url=' + @{/dashboard}"/>
+  <title>Redirecting...</title>
 </head>
 <body>
-
-<h1>Welcome to Smart Task Scheduler 🚀</h1>
-
-<p>This project uses DSA internally:</p>
-<ul>
-    <li>Priority Queue (Heap)</li>
-    <li>Dependency Graph</li>
-    <li>Interval Tree</li>
-</ul>
-
-<a href="/tasks">Go To Task Management</a>
-
+  <p>Redirecting to <a th:href="@{/dashboard}">dashboard</a>...</p>
 </body>
 </html>

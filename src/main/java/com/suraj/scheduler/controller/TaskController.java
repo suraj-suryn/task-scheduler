@@ -1,77 +1,113 @@
 package com.suraj.scheduler.controller;
 
+import com.suraj.scheduler.entity.RecurrenceType;
+import com.suraj.scheduler.entity.Task;
+import com.suraj.scheduler.entity.TaskStatus;
+import com.suraj.scheduler.exception.DependencyCycleException;
+import com.suraj.scheduler.exception.TaskOverlapException;
+import com.suraj.scheduler.security.SecurityUtils;
+import com.suraj.scheduler.service.CategoryService;
+import com.suraj.scheduler.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.suraj.scheduler.entity.Task;
-import com.suraj.scheduler.exception.DependencyCycleException;
-import com.suraj.scheduler.exception.TaskOverlapException;
-import com.suraj.scheduler.service.TaskService;
-
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/tasks")
 public class TaskController {
 
-	private final TaskService taskService;
+    private final TaskService taskService;
+    private final CategoryService categoryService;
+    private final SecurityUtils securityUtils;
 
-	public TaskController(TaskService taskService) {
-		this.taskService = taskService;
-	}
+    public TaskController(TaskService taskService, CategoryService categoryService,
+                          SecurityUtils securityUtils) {
+        this.taskService = taskService;
+        this.categoryService = categoryService;
+        this.securityUtils = securityUtils;
+    }
 
-	@GetMapping
-	public String listTasks(Model model) {
-		model.addAttribute("tasks", taskService.getAllTasks());
-		model.addAttribute("task", new Task());
-		return "tasks";
-	}
+    @GetMapping
+    public String listTasks(Model model,
+                            @RequestParam(required = false) String search,
+                            @RequestParam(required = false) TaskStatus status,
+                            @RequestParam(required = false) Long categoryId) {
+        Long userId = securityUtils.getCurrentUserId();
+        boolean isAdmin = securityUtils.isAdmin();
 
-	@PostMapping("/save")
-	public String saveTask(@Valid @ModelAttribute("task") Task task, BindingResult result, Model model) {
+        model.addAttribute("tasks", taskService.getTasksForUser(userId, isAdmin, search, status, categoryId));
+        model.addAttribute("task", new Task());
+        model.addAttribute("categories", categoryService.getAll(userId, isAdmin));
+        model.addAttribute("statuses", TaskStatus.values());
+        model.addAttribute("recurrenceTypes", RecurrenceType.values());
+        model.addAttribute("search", search);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("selectedCategoryId", categoryId);
+        return "tasks";
+    }
 
-		 // Validation errors from @Valid
-	    if (result.hasErrors()) {
-	        model.addAttribute("tasks", taskService.getAllTasks());
-	        model.addAttribute("errorMessage", "Validation failed. Please correct the fields.");
-	        return "tasks";
-	    }
+    @PostMapping("/save")
+    public String saveTask(@Valid @ModelAttribute("task") Task task,
+                           BindingResult result, Model model,
+                           RedirectAttributes redirectAttributes) {
+        Long userId = securityUtils.getCurrentUserId();
+        boolean isAdmin = securityUtils.isAdmin();
 
-	    try {
+        if (result.hasErrors()) {
+            model.addAttribute("tasks", taskService.getTasksForUser(userId, isAdmin, null, null, null));
+            model.addAttribute("categories", categoryService.getAll(userId, isAdmin));
+            model.addAttribute("statuses", TaskStatus.values());
+            model.addAttribute("recurrenceTypes", RecurrenceType.values());
+            return "tasks";
+        }
 
-	        taskService.saveTask(task);
+        task.setAssignedTo(userId);
 
-	    } catch (TaskOverlapException e) {
+        try {
+            taskService.saveTask(task);
+            redirectAttributes.addFlashAttribute("successMessage", "Task created successfully!");
+        } catch (TaskOverlapException | DependencyCycleException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Unexpected error: " + e.getMessage());
+        }
 
-	        model.addAttribute("errorMessage", e.getMessage());
-	        model.addAttribute("tasks", taskService.getAllTasks());
-	        return "tasks";
+        return "redirect:/tasks";
+    }
 
-	    } catch (DependencyCycleException e) {
+    @GetMapping("/delete/{id}")
+    public String deleteTask(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        taskService.deleteTask(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Task deleted.");
+        return "redirect:/tasks";
+    }
 
-	        model.addAttribute("errorMessage", e.getMessage());
-	        model.addAttribute("tasks", taskService.getAllTasks());
-	        return "tasks";
+    @PostMapping("/update/{id}")
+    public String updateTask(@PathVariable Long id,
+                             @Valid @ModelAttribute("task") Task task,
+                             BindingResult result, Model model,
+                             RedirectAttributes redirectAttributes) {
+        Long userId = securityUtils.getCurrentUserId();
+        boolean isAdmin = securityUtils.isAdmin();
 
-	    } catch (Exception e) {
+        if (result.hasErrors()) {
+            model.addAttribute("tasks", taskService.getTasksForUser(userId, isAdmin, null, null, null));
+            model.addAttribute("categories", categoryService.getAll(userId, isAdmin));
+            model.addAttribute("statuses", TaskStatus.values());
+            model.addAttribute("recurrenceTypes", RecurrenceType.values());
+            return "tasks";
+        }
 
-	        model.addAttribute("errorMessage", "Unexpected error occurred");
-	        model.addAttribute("tasks", taskService.getAllTasks());
-	        return "tasks";
-	    }
-		taskService.saveTask(task);
-		return "redirect:/";
-	}
+        try {
+            taskService.updateTask(id, task);
+            redirectAttributes.addFlashAttribute("successMessage", "Task updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
 
-	@GetMapping("/delete/{id}")
-	public String deleteTask(@PathVariable Long id) {
-		taskService.deleteTask(id);
-		return "redirect:/tasks";
-	}
+        return "redirect:/tasks";
+    }
 }
