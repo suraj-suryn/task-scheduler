@@ -58,6 +58,17 @@
     body.dark table thead { background:#1e293b !important; }
     body.dark tr:hover { background:#1e293b !important; }
     body.dark .divide-gray-50 > * { border-color:#334155 !important; }
+    body.dark header { background:#1e293b !important; border-color:#334155 !important; }
+    body.dark #bottom-nav { background:#1e293b !important; border-color:#334155 !important; }
+    /* Responsive table scroll */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Mobile bottom padding so content doesn't hide behind bottom nav */
+    @media (max-width: 1023px) { main { padding-bottom: 5rem !important; } }
+    /* Touch-friendly tap targets */
+    @media (max-width: 640px) {
+      button, a, select { min-height: 40px; }
+      .text-xs { font-size: 0.75rem; }
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex">
@@ -128,30 +139,66 @@
   <!-- ===== MAIN CONTENT ===== -->
   <div class="flex-1 flex flex-col min-w-0">
     <!-- Top bar (mobile) -->
-    <header class="lg:hidden bg-white border-b px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
-      <button onclick="toggleSidebar()" class="text-gray-600 hover:text-indigo-600">
-        <i class="fa-solid fa-bars text-lg"></i>
-      </button>
-      <span class="font-semibold text-indigo-700 text-sm">Task Scheduler</span>
+    <header class="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="text-gray-600 hover:text-indigo-600 p-1 rounded-lg">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <i class="fa-solid fa-calendar-check text-white text-xs"></i>
+          </div>
+          <span class="font-bold text-indigo-700 text-sm">Task Scheduler</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleDark()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:text-indigo-600 transition">
+          <i id="dark-icon-mobile" class="fa-solid fa-moon text-sm"></i>
+        </button>
+        <button onclick="document.getElementById('add-task-modal') && document.getElementById('add-task-modal').classList.remove('hidden')"
+                class="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
+          <i class="fa-solid fa-plus text-sm"></i>
+        </button>
+      </div>
     </header>
 
     <!-- Toast container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none" style="max-width:380px;">
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none" style="max-width:min(380px,90vw);">
       <div th:if="${successMessage}" class="toast pointer-events-auto flex items-start gap-3 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl shadow-lg text-sm">
-        <i class="fa-solid fa-circle-check text-green-500 mt-0.5"></i>
+        <i class="fa-solid fa-circle-check text-green-500 mt-0.5 flex-shrink-0"></i>
         <span th:text="${successMessage}">Success</span>
-        <button onclick="this.parentElement.remove()" class="ml-auto text-green-400 hover:text-green-700"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="this.parentElement.remove()" class="ml-auto text-green-400 hover:text-green-700 flex-shrink-0"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div th:if="${errorMessage}" class="toast pointer-events-auto flex items-start gap-3 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl shadow-lg text-sm">
-        <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
+        <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5 flex-shrink-0"></i>
         <span th:text="${errorMessage}">Error</span>
-        <button onclick="this.parentElement.remove()" class="ml-auto text-red-400 hover:text-red-700"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="this.parentElement.remove()" class="ml-auto text-red-400 hover:text-red-700 flex-shrink-0"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
 
-    <main class="flex-1 p-6 overflow-auto">
+    <main class="flex-1 p-4 sm:p-6 overflow-auto">
       <th:block th:replace="${content}"/>
     </main>
+
+    <!-- ===== MOBILE BOTTOM NAV ===== -->
+    <nav id="bottom-nav" class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-10 flex items-center justify-around px-2 py-1 safe-area-pb">
+      <a th:href="@{/dashboard}" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-indigo-600 transition min-w-0">
+        <i class="fa-solid fa-gauge-high text-base"></i>
+        <span class="text-xs font-medium">Home</span>
+      </a>
+      <a th:href="@{/tasks}" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-indigo-600 transition min-w-0">
+        <i class="fa-solid fa-list-check text-base"></i>
+        <span class="text-xs font-medium">Tasks</span>
+      </a>
+      <a th:href="@{/categories}" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-indigo-600 transition min-w-0">
+        <i class="fa-solid fa-tag text-base"></i>
+        <span class="text-xs font-medium">Categories</span>
+      </a>
+      <a sec:authorize="hasAuthority('ROLE_ADMIN')" th:href="@{/admin}" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-red-600 transition min-w-0">
+        <i class="fa-solid fa-shield-halved text-base"></i>
+        <span class="text-xs font-medium">Admin</span>
+      </a>
+    </nav>
   </div>
 
   <script>
@@ -166,13 +213,19 @@
     function toggleDark() {
       const isDark = document.body.classList.toggle('dark');
       localStorage.setItem('darkMode', isDark ? '1' : '0');
-      document.getElementById('dark-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      const icon = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      const d = document.getElementById('dark-icon');
+      const m = document.getElementById('dark-icon-mobile');
+      if (d) d.className = icon;
+      if (m) m.className = icon + ' text-sm';
     }
     (function() {
       if (localStorage.getItem('darkMode') === '1') {
         document.body.classList.add('dark');
-        const icon = document.getElementById('dark-icon');
-        if (icon) icon.className = 'fa-solid fa-sun';
+        ['dark-icon','dark-icon-mobile'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.className = el.id === 'dark-icon-mobile' ? 'fa-solid fa-sun text-sm' : 'fa-solid fa-sun';
+        });
       }
     })();
 
@@ -199,6 +252,19 @@
           el.classList.add('nav-active');
         }
       }
+    })();
+
+    // Bottom nav active highlight
+    (function() {
+      var path = window.location.pathname;
+      var bnLinks = document.querySelectorAll('#bottom-nav a');
+      bnLinks.forEach(function(a) {
+        var href = a.getAttribute('href') || '';
+        if (href && (path === href || (href.length > 1 && path.startsWith(href)))) {
+          a.classList.add('text-indigo-600');
+          a.classList.remove('text-gray-500');
+        }
+      });
     })();
   </script>
 

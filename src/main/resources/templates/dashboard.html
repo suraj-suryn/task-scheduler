@@ -7,14 +7,14 @@
 <body>
 <th:block th:fragment="main-content">
 
-  <div class="mb-6 flex items-center justify-between">
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div>
       <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
       <p class="text-gray-500 text-sm mt-1">Welcome back, <span class="font-semibold text-indigo-600" th:text="${#authentication.name}">User</span>!</p>
     </div>
     <!-- Smart Suggest Button -->
     <button onclick="suggestTask()"
-            class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition">
+            class="self-start sm:self-auto inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition">
       <i class="fa-solid fa-wand-magic-sparkles"></i>What's Next?
     </button>
   </div>
@@ -76,7 +76,7 @@
   </div>
 
   <!-- Charts row -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
       <h2 class="font-semibold text-gray-800 text-sm mb-4"><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i>Task Status Breakdown</h2>
       <div class="flex items-center justify-center" style="height:200px;">
@@ -135,21 +135,21 @@
   </div>
 
   <!-- Quick actions -->
-  <div class="mt-6 flex flex-wrap gap-3">
-    <a th:href="@{/tasks}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition">
-      <i class="fa-solid fa-plus"></i>New Task
+  <div class="mt-6 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
+    <a th:href="@{/tasks}" class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-plus"></i><span class="hidden sm:inline">New Task</span><span class="sm:hidden">New Task</span>
     </a>
-    <a th:href="@{/categories}" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-lg transition">
-      <i class="fa-solid fa-tag text-indigo-500"></i>Manage Categories
+    <a th:href="@{/categories}" class="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-tag text-indigo-500"></i><span>Categories</span>
     </a>
-    <a th:href="@{/tasks/graph}" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-lg transition">
-      <i class="fa-solid fa-diagram-project text-purple-500"></i>Dependency Graph
+    <a th:href="@{/tasks/graph}" class="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-diagram-project text-purple-500"></i><span>Dep Graph</span>
     </a>
-    <a th:href="@{/api/tasks/export/csv}" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-lg transition">
-      <i class="fa-solid fa-file-csv text-green-500"></i>Export CSV
+    <a th:href="@{/api/tasks/export/csv}" class="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-file-csv text-green-500"></i><span>Export CSV</span>
     </a>
-    <a href="/swagger-ui/index.html" target="_blank" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-lg transition">
-      <i class="fa-solid fa-book text-blue-500"></i>API Docs
+    <a href="/swagger-ui/index.html" target="_blank" class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-book text-blue-500"></i><span>API Docs</span>
     </a>
   </div>
 

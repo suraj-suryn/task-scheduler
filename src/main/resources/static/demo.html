@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Scheduler — Complete Demo Report</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --indigo: #4f46e5; --indigo-dark: #3730a3; --indigo-light: #eef2ff;
+      --green: #16a34a; --red: #dc2626; --yellow: #d97706;
+      --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+      --gray-400: #9ca3af; --gray-600: #4b5563; --gray-800: #1f2937; --gray-900: #111827;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--gray-800); background: #fff; font-size: 13px; line-height: 1.5; }
+
+    /* ── PRINT BUTTON ── */
+    .no-print { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 10px; }
+    .no-print button {
+      background: var(--indigo); color: #fff; border: none; padding: 12px 20px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 14px rgba(79,70,229,0.4); transition: background 0.2s;
+    }
+    .no-print button:hover { background: var(--indigo-dark); }
+
+    /* ── PAGE BREAKS ── */
+    @media print {
+      .no-print { display: none !important; }
+      .page-break { page-break-before: always; }
+      body { font-size: 11px; }
+      .cover { min-height: 100vh; }
+    }
+
+    /* ── COVER PAGE ── */
+    .cover {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 70%, #6366f1 100%);
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; padding: 60px 40px; color: #fff; position: relative; overflow: hidden;
+    }
+    .cover::before {
+      content:''; position:absolute; inset:0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .cover-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #c7d2fe; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px; border-radius: 20px; margin-bottom: 32px; display: inline-block; }
+    .cover h1 { font-size: 52px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+    .cover h1 span { color: #a5b4fc; }
+    .cover .subtitle { font-size: 18px; color: #c7d2fe; font-weight: 400; margin-bottom: 40px; max-width: 520px; }
+    .cover-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 640px; width: 100%; margin-bottom: 48px; }
+    .cover-stat { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; padding: 18px; }
+    .cover-stat .num { font-size: 32px; font-weight: 800; color: #fff; }
+    .cover-stat .lbl { font-size: 11px; color: #a5b4fc; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .cover-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; color: #a5b4fc; font-size: 12px; }
+    .cover-meta span { display: flex; align-items: center; gap: 6px; }
+    .cover-icon { width: 80px; height: 80px; background: rgba(255,255,255,0.15); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 36px; }
+
+    /* ── SECTIONS ── */
+    .section { padding: 56px 60px; max-width: 1100px; margin: 0 auto; }
+    .section-sm { padding: 40px 60px; max-width: 1100px; margin: 0 auto; }
+    .section-divider { height: 4px; background: linear-gradient(90deg, var(--indigo), #8b5cf6, #06b6d4); }
+
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--indigo); margin-bottom: 8px; }
+    .section-title { font-size: 28px; font-weight: 800; color: var(--gray-900); margin-bottom: 8px; }
+    .section-desc { color: var(--gray-600); font-size: 14px; max-width: 600px; }
+
+    /* ── STEP CARD ── */
+    .step-grid { display: grid; gap: 20px; margin-top: 32px; }
+    .step-card {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 16px; padding: 24px;
+      transition: box-shadow 0.2s;
+    }
+    .step-num {
+      flex-shrink: 0; width: 40px; height: 40px; background: var(--indigo); color: #fff;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800;
+    }
+    .step-body h3 { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px; }
+    .step-body p { color: var(--gray-600); font-size: 13px; line-height: 1.6; }
+    .step-body .url { display: inline-block; background: var(--indigo-light); color: var(--indigo); font-family: monospace; font-size: 11px; padding: 2px 8px; border-radius: 6px; margin-top: 6px; }
+    .step-icon { font-size: 18px; color: var(--indigo); margin-top: 2px; }
+
+    /* ── FEATURE TABLE ── */
+    .feature-table { width: 100%; border-collapse: collapse; margin-top: 28px; }
+    .feature-table th { background: var(--indigo); color: #fff; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; }
+    .feature-table th:first-child { border-radius: 10px 0 0 0; }
+    .feature-table th:last-child { border-radius: 0 10px 0 0; }
+    .feature-table td { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); font-size: 12px; vertical-align: top; }
+    .feature-table tr:last-child td { border-bottom: none; }
+    .feature-table tr:nth-child(even) td { background: var(--gray-50); }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: #dcfce7; color: var(--green); }
+    .badge-blue  { background: #dbeafe; color: #1d4ed8; }
+    .badge-purple{ background: #f3e8ff; color: #7c3aed; }
+    .badge-orange{ background: #fef3c7; color: var(--yellow); }
+
+    /* ── TECH STACK GRID ── */
+    .tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-top: 28px; }
+    .tech-card { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .tech-card .tech-icon { font-size: 22px; }
+    .tech-card .tech-name { font-size: 13px; font-weight: 700; color: var(--gray-900); }
+    .tech-card .tech-desc { font-size: 11px; color: var(--gray-400); }
+
+    /* ── DSA CARDS ── */
+    .dsa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 28px; }
+    .dsa-card { border-radius: 16px; padding: 24px; border: 1px solid; }
+    .dsa-card.interval { border-color: #bfdbfe; background: #eff6ff; }
+    .dsa-card.heap     { border-color: #bbf7d0; background: #f0fdf4; }
+    .dsa-card.graph    { border-color: #e9d5ff; background: #faf5ff; }
+    .dsa-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .dsa-card .dsa-type { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .dsa-card p { font-size: 12px; line-height: 1.7; }
+    .dsa-card .complexity { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .dsa-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: rgba(0,0,0,0.07); }
+
+    /* ── SCENARIO BOX ── */
+    .scenario { background: var(--gray-50); border-left: 4px solid var(--indigo); border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 16px 0; }
+    .scenario h4 { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+    .scenario ol { padding-left: 20px; color: var(--gray-600); font-size: 13px; line-height: 1.9; }
+    .scenario .result { margin-top: 10px; background: #dcfce7; color: var(--green); border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+
+    /* ── API TABLE ── */
+    .api-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+    .api-table th { background: var(--gray-100); color: var(--gray-600); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .api-table td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); }
+    .method { display: inline-block; padding: 2px 8px; border-radius: 6px; font-family: monospace; font-size: 11px; font-weight: 700; }
+    .method-get    { background: #dcfce7; color: #15803d; }
+    .method-post   { background: #dbeafe; color: #1d4ed8; }
+    .method-put    { background: #fef9c3; color: #b45309; }
+    .method-patch  { background: #f3e8ff; color: #7c3aed; }
+    .method-delete { background: #fee2e2; color: #b91c1c; }
+    code { font-family: monospace; font-size: 11px; background: var(--gray-100); padding: 1px 6px; border-radius: 4px; }
+
+    /* ── STATUS FLOW ── */
+    .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-top: 20px; }
+    .flow-node { padding: 10px 20px; border-radius: 10px; font-size: 12px; font-weight: 700; }
+    .flow-arrow { color: var(--gray-400); font-size: 18px; margin: 0 4px; }
+    .fn-pending   { background: #dbeafe; color: #1d4ed8; }
+    .fn-running   { background: #fef9c3; color: #b45309; }
+    .fn-completed { background: #dcfce7; color: var(--green); }
+    .fn-failed    { background: #fee2e2; color: var(--red); }
+
+    /* ── DEPLOYMENT ── */
+    .deploy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+    .deploy-card { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 14px; padding: 20px; }
+    .deploy-card h4 { font-size: 13px; font-weight: 700; color: var(--gray-900); margin-bottom: 12px; display: flex; align-items: center; gap-8px; gap: 8px; }
+    .deploy-card ul { list-style: none; font-size: 12px; color: var(--gray-600); line-height: 2; }
+    .deploy-card ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+    pre { background: #1e1b4b; color: #c7d2fe; padding: 16px 20px; border-radius: 10px; font-size: 11px; line-height: 1.8; overflow-x: auto; margin-top: 10px; }
+
+    /* ── TOC ── */
+    .toc { background: var(--indigo-light); border: 1px solid #c7d2fe; border-radius: 16px; padding: 28px 36px; margin-top: 28px; }
+    .toc h3 { font-size: 14px; font-weight: 700; color: var(--indigo); margin-bottom: 16px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { color: var(--gray-600); font-size: 13px; line-height: 2.2; }
+    .toc li a { color: var(--indigo); text-decoration: none; font-weight: 500; }
+
+    /* ── FOOTER ── */
+    .doc-footer { background: var(--gray-900); color: var(--gray-400); padding: 32px 60px; text-align: center; font-size: 12px; }
+    .doc-footer strong { color: #fff; }
+
+    /* ── HIGHLIGHT BOX ── */
+    .info-box { background: var(--indigo-light); border: 1px solid #c7d2fe; border-radius: 12px; padding: 16px 20px; margin: 16px 0; font-size: 13px; color: #3730a3; }
+    .warn-box  { background: #fef9c3; border: 1px solid #fde68a; border-radius: 12px; padding: 16px 20px; margin: 16px 0; font-size: 13px; color: #92400e; }
+    .success-box { background: #dcfce7; border: 1px solid #86efac; border-radius: 12px; padding: 16px 20px; margin: 16px 0; font-size: 13px; color: #14532d; }
+
+    hr.soft { border: none; border-top: 1px solid var(--gray-200); margin: 32px 0; }
+  </style>
+</head>
+<body>
+
+<!-- ████ PRINT BUTTON ████ -->
+<div class="no-print">
+  <button onclick="window.print()">
+    <i class="fa-solid fa-file-pdf"></i> Save as PDF
+  </button>
+</div>
+
+<!-- ████████████████████████████████
+     PAGE 1 — COVER
+████████████████████████████████ -->
+<div class="cover">
+  <div style="position:relative; z-index:1; width:100%; max-width:700px;">
+    <div class="cover-badge">Project Documentation &amp; Demo Report</div>
+    <div class="cover-icon"><i class="fa-solid fa-calendar-check"></i></div>
+    <h1>Task <span>Scheduler</span></h1>
+    <p class="subtitle">A full-stack Spring Boot application with DSA-powered scheduling, role-based access control, and a modern responsive UI</p>
+
+    <div class="cover-grid">
+      <div class="cover-stat"><div class="num">8+</div><div class="lbl">Features</div></div>
+      <div class="cover-stat"><div class="num">3</div><div class="lbl">DSA Structures</div></div>
+      <div class="cover-stat"><div class="num">12+</div><div class="lbl">REST APIs</div></div>
+    </div>
+
+    <div class="cover-meta">
+      <span><i class="fa-brands fa-java"></i> Java 17 + Spring Boot 3.5</span>
+      <span><i class="fa-solid fa-database"></i> PostgreSQL (Supabase)</span>
+      <span><i class="fa-solid fa-cloud"></i> Deployed on Railway</span>
+      <span><i class="fa-solid fa-calendar"></i> June 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ████████████████████████████████
+     PAGE 2 — TABLE OF CONTENTS
+████████████████████████████████ -->
+<div class="page-break"></div>
+<div class="section">
+  <div class="section-label">Navigation</div>
+  <div class="section-title">Table of Contents</div>
+  <p class="section-desc">This document covers the complete lifecycle of the Task Scheduler — from architecture and setup to every feature demo.</p>
+
+  <div class="toc">
+    <h3><i class="fa-solid fa-list"></i> Sections</h3>
+    <ol>
+      <li><a href="#architecture">Architecture Overview</a> — System design, layers, and tech stack</li>
+      <li><a href="#dsa">DSA Structures</a> — IntervalTree, PriorityHeap, DependencyGraph</li>
+      <li><a href="#setup">Project Setup</a> — Local dev and production deployment</li>
+      <li><a href="#auth">Authentication Flow</a> — Registration, login, role-based access</li>
+      <li><a href="#tasks">Task Management Demo</a> — Create, filter, search, update</li>
+      <li><a href="#dashboard">Dashboard &amp; Analytics</a> — Charts, stats, smart suggest</li>
+      <li><a href="#kanban">Kanban Board</a> — Drag-and-drop status management</li>
+      <li><a href="#depgraph">Dependency Graph</a> — D3.js force-directed visualization</li>
+      <li><a href="#darkmode">Dark Mode</a> — Persistent theme across all pages</li>
+      <li><a href="#export">CSV Export</a> — One-click data download</li>
+      <li><a href="#admin">Admin Portal</a> — User management and system-wide view</li>
+      <li><a href="#api">REST API Reference</a> — All endpoints with methods and descriptions</li>
+      <li><a href="#security">Security Model</a> — Spring Security 6 configuration</li>
+      <li><a href="#deployment">Deployment</a> — Railway + Supabase setup</li>
+      <li><a href="#scenarios">Full E2E Scenarios</a> — 8 complete test scenarios</li>
+    </ol>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 3 — ARCHITECTURE
+████████████████████████████████ -->
+<div class="page-break" id="architecture"></div>
+<div class="section">
+  <div class="section-label">Section 1</div>
+  <div class="section-title">Architecture Overview</div>
+  <p class="section-desc">Layered MVC architecture with custom DSA structures integrated into the service layer.</p>
+
+  <div style="margin-top:28px; background:#f8faff; border:1px solid #c7d2fe; border-radius:16px; padding:28px; font-family:monospace; font-size:12px; line-height:2.2; color:#3730a3;">
+    <div style="display:grid; grid-template-columns:1fr; gap:6px;">
+      <div style="text-align:center; background:#4338ca; color:#fff; padding:10px; border-radius:10px; font-weight:700;">Browser / Mobile Client</div>
+      <div style="text-align:center; color:#6366f1;">↕ HTTP/HTTPS</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div style="background:#e0e7ff; padding:12px; border-radius:10px; text-align:center;"><strong>TaskController</strong><br/><span style="font-size:10px; color:#6366f1;">Thymeleaf SSR</span></div>
+        <div style="background:#e0e7ff; padding:12px; border-radius:10px; text-align:center;"><strong>TaskRestController</strong><br/><span style="font-size:10px; color:#6366f1;">REST API /api/**</span></div>
+      </div>
+      <div style="text-align:center; color:#6366f1;">↕ Service Layer</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+        <div style="background:#ddd6fe; padding:12px; border-radius:10px; text-align:center;"><strong>TaskService</strong></div>
+        <div style="background:#ddd6fe; padding:12px; border-radius:10px; text-align:center;"><strong>CategoryService</strong></div>
+        <div style="background:#ddd6fe; padding:12px; border-radius:10px; text-align:center;"><strong>SchedulerEngine</strong></div>
+      </div>
+      <div style="text-align:center; color:#6366f1;">↕ DSA + JPA</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+        <div style="background:#fde8d8; padding:12px; border-radius:10px; text-align:center;"><strong>IntervalTree</strong></div>
+        <div style="background:#d1fae5; padding:12px; border-radius:10px; text-align:center;"><strong>PriorityHeap</strong></div>
+        <div style="background:#e9d5ff; padding:12px; border-radius:10px; text-align:center;"><strong>DependencyGraph</strong></div>
+      </div>
+      <div style="text-align:center; color:#6366f1;">↕ Spring Data JPA</div>
+      <div style="text-align:center; background:#374151; color:#fff; padding:10px; border-radius:10px; font-weight:700;">PostgreSQL (Supabase) · H2 (Dev)</div>
+    </div>
+  </div>
+
+  <div class="tech-grid" style="margin-top:32px;">
+    <div class="tech-card"><div class="tech-icon">☕</div><div class="tech-name">Java 17</div><div class="tech-desc">LTS runtime</div></div>
+    <div class="tech-card"><div class="tech-icon">🍃</div><div class="tech-name">Spring Boot 3.5.11</div><div class="tech-desc">Core framework</div></div>
+    <div class="tech-card"><div class="tech-icon">🔒</div><div class="tech-name">Spring Security 6</div><div class="tech-desc">BCrypt, form login</div></div>
+    <div class="tech-card"><div class="tech-icon">📦</div><div class="tech-name">Spring Data JPA</div><div class="tech-desc">Hibernate 6 ORM</div></div>
+    <div class="tech-card"><div class="tech-icon">🎨</div><div class="tech-name">Thymeleaf + Tailwind</div><div class="tech-desc">SSR + utility CSS</div></div>
+    <div class="tech-card"><div class="tech-icon">🐘</div><div class="tech-name">PostgreSQL / Supabase</div><div class="tech-desc">Production database</div></div>
+    <div class="tech-card"><div class="tech-icon">📊</div><div class="tech-name">Chart.js + D3.js</div><div class="tech-desc">Analytics &amp; graph viz</div></div>
+    <div class="tech-card"><div class="tech-icon">🚀</div><div class="tech-name">Railway</div><div class="tech-desc">Cloud deployment</div></div>
+    <div class="tech-card"><div class="tech-icon">📋</div><div class="tech-name">Springdoc OpenAPI</div><div class="tech-desc">Swagger UI auto-gen</div></div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 4 — DSA STRUCTURES
+████████████████████████████████ -->
+<div class="page-break" id="dsa"></div>
+<div class="section">
+  <div class="section-label">Section 2</div>
+  <div class="section-title">Custom DSA Structures</div>
+  <p class="section-desc">Three hand-written data structures power the core scheduling logic — no third-party scheduling libraries used.</p>
+
+  <div class="dsa-grid">
+    <div class="dsa-card interval">
+      <div class="dsa-type" style="color:#1d4ed8;">📐 Interval Tree (BST)</div>
+      <h3 style="color:#1e3a8a;">IntervalTree</h3>
+      <p>A Binary Search Tree that stores task time intervals and detects scheduling conflicts in <strong>O(log n)</strong>. Before every task save, <code>isOverlapping()</code> is called against all existing tasks. If any time range intersects, a <code>TaskOverlapException</code> is thrown.</p>
+      <div class="complexity">
+        <span class="dsa-tag">Insert: O(log n)</span>
+        <span class="dsa-tag">Query: O(log n)</span>
+        <span class="dsa-tag">Used on: every task create/update</span>
+      </div>
+    </div>
+    <div class="dsa-card heap">
+      <div class="dsa-type" style="color:#15803d;">🔺 Priority Heap (Min/Max)</div>
+      <h3 style="color:#14532d;">PriorityHeap</h3>
+      <p>A custom heap implementation sorted by task priority (1–10). The <strong>"What's Next?"</strong> smart suggest feature polls the heap's peek to find the highest-priority PENDING task whose all dependencies are completed.</p>
+      <div class="complexity">
+        <span class="dsa-tag">Add: O(log n)</span>
+        <span class="dsa-tag">Poll: O(log n)</span>
+        <span class="dsa-tag">Peek: O(1)</span>
+      </div>
+    </div>
+    <div class="dsa-card graph">
+      <div class="dsa-type" style="color:#7c3aed;">🕸 Dependency Graph (DAG + DFS)</div>
+      <h3 style="color:#4c1d95;">DependencyGraph</h3>
+      <p>A Directed Acyclic Graph with DFS-based cycle detection. When adding a task dependency, <code>hasCycle()</code> traverses the graph to ensure no circular dependencies exist. Cycles throw <code>DependencyCycleException</code>.</p>
+      <div class="complexity">
+        <span class="dsa-tag">Cycle check: O(V + E)</span>
+        <span class="dsa-tag">Topological sort: O(V + E)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:24px;">
+    <strong><i class="fa-solid fa-lightbulb"></i> All three structures are hydrated from the database at startup</strong> via <code>@PostConstruct</code> in <code>TaskServiceImpl</code>, so they stay in sync with persisted task data.
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 5 — SETUP
+████████████████████████████████ -->
+<div class="page-break" id="setup"></div>
+<div class="section">
+  <div class="section-label">Section 3</div>
+  <div class="section-title">Project Setup</div>
+
+  <div class="deploy-grid">
+    <div class="deploy-card">
+      <h4><i class="fa-solid fa-laptop-code" style="color:var(--indigo)"></i> Local Development</h4>
+      <ul>
+        <li>Java 17+ installed</li>
+        <li>Clone from GitHub</li>
+        <li>H2 in-memory DB (no setup needed)</li>
+        <li>Run: <code>./mvnw spring-boot:run</code></li>
+        <li>Visit: <code>http://localhost:8080</code></li>
+        <li>H2 Console: <code>/h2-console</code></li>
+      </ul>
+      <pre>git clone https://github.com/suraj-suryn/task-scheduler.git
+cd task-scheduler
+./mvnw spring-boot:run</pre>
+    </div>
+    <div class="deploy-card">
+      <h4><i class="fa-solid fa-cloud" style="color:#0ea5e9"></i> Production (Railway + Supabase)</h4>
+      <ul>
+        <li>Dockerized via Railway auto-build</li>
+        <li>PostgreSQL via Supabase Session Pooler</li>
+        <li>Spring profile: <code>prod</code></li>
+        <li>Auto-deploy on git push to master</li>
+        <li>Live URL on Railway subdomain</li>
+      </ul>
+      <pre>SPRING_PROFILES_ACTIVE=prod
+DATABASE_URL=jdbc:postgresql://...
+DB_USERNAME=postgres.xxxxx
+DB_PASSWORD=*****</pre>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 6 — AUTH FLOW
+████████████████████████████████ -->
+<div class="page-break" id="auth"></div>
+<div class="section">
+  <div class="section-label">Section 4</div>
+  <div class="section-title">Authentication Flow</div>
+  <p class="section-desc">Spring Security 6 with BCrypt password hashing, form-based login, and role-based access control.</p>
+
+  <div class="step-grid" style="grid-template-columns:1fr 1fr; gap:16px; margin-top:24px;">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Register <code>/register</code></h3>
+        <p>User enters username, email, and password. Password is BCrypt-hashed before storage. Default role: <code>ROLE_USER</code>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Login <code>/login</code></h3>
+        <p>Spring Security's <code>DaoAuthenticationProvider</code> validates credentials. On success, redirects to <code>/dashboard</code>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Session Management</h3>
+        <p>Server-side session with CSRF protection. Sessions auto-expire. Logout via POST <code>/logout</code> to prevent CSRF attacks.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Role-Based Access</h3>
+        <p><code>ROLE_USER</code> — own tasks only. <code>ROLE_ADMIN</code> — all tasks + <code>/admin/**</code>. Enforced via Spring Security rules AND <code>@PreAuthorize</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:28px; font-size:15px; font-weight:700; color:var(--gray-900);">Test Credentials</h3>
+  <table class="feature-table" style="margin-top:12px;">
+    <thead><tr><th>Username</th><th>Password</th><th>Role</th><th>Access</th></tr></thead>
+    <tbody>
+      <tr><td><code>admin</code></td><td><code>admin123</code></td><td><span class="badge badge-purple">ROLE_ADMIN</span></td><td>All features + Admin Portal</td></tr>
+      <tr><td><code>testuser</code></td><td><code>test123</code></td><td><span class="badge badge-blue">ROLE_USER</span></td><td>Own tasks only, no admin access</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 7 — TASK MANAGEMENT
+████████████████████████████████ -->
+<div class="page-break" id="tasks"></div>
+<div class="section">
+  <div class="section-label">Section 5</div>
+  <div class="section-title">Task Management Demo</div>
+  <p class="section-desc">Navigate to <code>/tasks</code> — full CRUD with overlap prevention, dependency management, and real-time status updates.</p>
+
+  <div class="step-grid" style="grid-template-columns:1fr; gap:14px; margin-top:24px;">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Creating a Task</h3>
+        <p>Click <strong>"Add Task"</strong> → modal opens with full form: name, description, priority (1–10), category, start/end time, recurrence, and dependency IDs. On submit, the backend validates:</p>
+        <ul style="margin-top:8px; padding-left:20px; color:var(--gray-600); font-size:12px; line-height:2;">
+          <li><strong>Time validity</strong> — end must be after start (<code>InvalidTaskTimeException</code>)</li>
+          <li><strong>Overlap check</strong> — IntervalTree scans for conflicts (<code>TaskOverlapException</code>)</li>
+          <li><strong>Cycle check</strong> — DependencyGraph DFS validates dependencies (<code>DependencyCycleException</code>)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Searching &amp; Filtering</h3>
+        <p>Filter bar supports <strong>3 simultaneous filters</strong>: text search (LIKE on task name), status dropdown, and category dropdown. All filters combine with AND logic via JPQL <code>@Query</code> in <code>TaskRepository</code>.</p>
+        <p style="margin-top:6px;">Example: search <em>"login"</em> + status <em>PENDING</em> → shows only matching pending tasks.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Updating Status (inline)</h3>
+        <p>Each task row has an inline status <code>&lt;select&gt;</code>. Changing it fires <code>PATCH /api/tasks/{id}/status</code> immediately — no page reload. The scheduler engine also auto-transitions tasks based on time.</p>
+        <div class="flow">
+          <div class="flow-node fn-pending">PENDING</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-running">RUNNING</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-completed">COMPLETED</div>
+          <div class="flow-arrow">|</div>
+          <div class="flow-node fn-failed">FAILED</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Recurrence</h3>
+        <p>Tasks can repeat <strong>DAILY / WEEKLY / MONTHLY</strong>. When the scheduler auto-completes a task, it clones it with the next scheduled time if recurrence is set and the recurrence end date hasn't passed.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 8 — DASHBOARD
+████████████████████████████████ -->
+<div class="page-break" id="dashboard"></div>
+<div class="section">
+  <div class="section-label">Section 6</div>
+  <div class="section-title">Dashboard &amp; Analytics</div>
+  <p class="section-desc">The dashboard at <code>/dashboard</code> gives a real-time overview of all your tasks with visual charts.</p>
+
+  <div class="step-grid" style="grid-template-columns:1fr 1fr; gap:16px; margin-top:24px;">
+    <div class="step-card">
+      <div class="step-num">📊</div>
+      <div class="step-body">
+        <h3>Status Donut Chart</h3>
+        <p><strong>Chart.js doughnut</strong> — shows breakdown of Pending, Running, Completed, Failed, Overdue tasks. Data fetched from <code>GET /api/tasks</code> on page load.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">📈</div>
+      <div class="step-body">
+        <h3>Priority Band Bar Chart</h3>
+        <p><strong>Chart.js bar</strong> — groups tasks into Low (1–3), Medium (4–6), High (7–10) priority bands. Helps identify workload distribution.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">🔮</div>
+      <div class="step-body">
+        <h3>"What's Next?" Smart Suggest</h3>
+        <p>Calls <code>GET /api/tasks/suggest</code> — uses the <strong>PriorityHeap DSA</strong> to find the highest-priority PENDING task whose ALL dependencies are completed.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">📅</div>
+      <div class="step-body">
+        <h3>Upcoming &amp; Completed Widgets</h3>
+        <p>Shows next 5 upcoming tasks sorted by deadline, and 5 recently completed tasks. Overdue tasks show a warning banner with count.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 9 — NEW FEATURES
+████████████████████████████████ -->
+<div class="page-break" id="kanban"></div>
+<div class="section">
+  <div class="section-label">Sections 7–10</div>
+  <div class="section-title">New Features Overview</div>
+
+  <table class="feature-table">
+    <thead>
+      <tr>
+        <th>Feature</th><th>Where</th><th>How It Works</th><th>Technology</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>🗂 Kanban Board</strong></td>
+        <td><code>/tasks</code> → Kanban tab</td>
+        <td>4 columns per status. Drag a card to new column → PATCH /api/tasks/{id}/status fires live</td>
+        <td>HTML5 Drag &amp; Drop</td>
+        <td><span class="badge badge-green">Live</span></td>
+      </tr>
+      <tr>
+        <td><strong>🕸 Dependency Graph</strong></td>
+        <td><code>/tasks/graph</code></td>
+        <td>Force-directed graph. Nodes = tasks (colored by status), arrows = dependencies. Draggable, zoomable, hover tooltips.</td>
+        <td>D3.js v7 CDN</td>
+        <td><span class="badge badge-green">Live</span></td>
+      </tr>
+      <tr>
+        <td><strong>🌙 Dark Mode</strong></td>
+        <td>All pages — sidebar toggle</td>
+        <td>Moon/Sun button in sidebar footer. Applies CSS class <code>body.dark</code>. Preference persisted in <code>localStorage</code>.</td>
+        <td>Tailwind CSS + localStorage</td>
+        <td><span class="badge badge-green">Live</span></td>
+      </tr>
+      <tr>
+        <td><strong>📄 CSV Export</strong></td>
+        <td><code>/api/tasks/export/csv</code></td>
+        <td>Streams CSV with headers: ID, Name, Description, Priority, Status, Category, Start/End Time, Recurrence. Timestamped filename.</td>
+        <td>Java PrintWriter streaming</td>
+        <td><span class="badge badge-green">Live</span></td>
+      </tr>
+      <tr>
+        <td><strong>🔮 Smart Suggest</strong></td>
+        <td>Dashboard → "What's Next?"</td>
+        <td>Scans PENDING tasks, checks all deps are COMPLETED, returns highest priority via PriorityHeap.</td>
+        <td>PriorityHeap DSA</td>
+        <td><span class="badge badge-green">Live</span></td>
+      </tr>
+      <tr>
+        <td><strong>📚 Swagger UI</strong></td>
+        <td><code>/swagger-ui/index.html</code></td>
+        <td>Auto-generated REST API docs. All endpoints documented. No auth required to browse.</td>
+        <td>springdoc-openapi 2.8</td>
+        <td><span class="badge badge-green">Live</span></td>
+      </tr>
+      <tr>
+        <td><strong>📱 Responsive Design</strong></td>
+        <td>All pages</td>
+        <td>Mobile-first layout: sidebar slides in, bottom nav bar on mobile, scrollable tables, stacked grids on small screens.</td>
+        <td>Tailwind CSS responsive utilities</td>
+        <td><span class="badge badge-green">Live</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 10 — ADMIN PORTAL
+████████████████████████████████ -->
+<div class="page-break" id="admin"></div>
+<div class="section">
+  <div class="section-label">Section 11</div>
+  <div class="section-title">Admin Portal</div>
+  <p class="section-desc">Accessible only to users with <code>ROLE_ADMIN</code>. Regular users get <strong>403 Forbidden</strong> at both UI and API level.</p>
+
+  <div class="step-grid" style="grid-template-columns:1fr 1fr; gap:16px; margin-top:24px;">
+    <div class="step-card">
+      <div class="step-num"><i class="fa-solid fa-chart-pie"></i></div>
+      <div class="step-body">
+        <h3>System Stats <code>/admin</code></h3>
+        <p>Shows totals across <strong>all users</strong>: total tasks, pending, running, completed, failed, overdue. Plus total registered users.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num"><i class="fa-solid fa-users"></i></div>
+      <div class="step-body">
+        <h3>User Management <code>/admin/users</code></h3>
+        <p>Table of all users with role dropdown (USER/ADMIN) and Disable/Enable button. Role changes and account status take effect immediately.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num"><i class="fa-solid fa-tasks"></i></div>
+      <div class="step-body">
+        <h3>All Tasks View <code>/admin/tasks</code></h3>
+        <p>Admin can see every task from every user. Can delete any task with confirmation. Useful for moderation and cleanup.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="step-body">
+        <h3>Access Protection</h3>
+        <p>Double-protected: Spring Security rule <code>.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")</code> at HTTP level AND <code>@PreAuthorize</code> on controller methods.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 11 — REST API REFERENCE
+████████████████████████████████ -->
+<div class="page-break" id="api"></div>
+<div class="section">
+  <div class="section-label">Section 12</div>
+  <div class="section-title">REST API Reference</div>
+  <p class="section-desc">All endpoints under <code>/api/**</code>. CSRF protection disabled for API routes. Full Swagger UI at <code>/swagger-ui/index.html</code>.</p>
+
+  <table class="api-table">
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td><code>/api/tasks</code></td><td>List tasks (search, status, categoryId filters)</td><td>Any user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td><code>/api/tasks/{id}</code></td><td>Get single task by ID</td><td>Any user</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td><code>/api/tasks</code></td><td>Create task (overlap + cycle check applied)</td><td>Any user</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td><code>/api/tasks/{id}</code></td><td>Full update of a task</td><td>Any user</td></tr>
+      <tr><td><span class="method method-patch">PATCH</span></td><td><code>/api/tasks/{id}/status</code></td><td>Update task status only — used by Kanban drag</td><td>Any user</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td><code>/api/tasks/{id}</code></td><td>Delete task by ID</td><td>Any user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td><code>/api/dashboard/stats</code></td><td>Get task counts by status (scoped to user or all if admin)</td><td>Any user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td><code>/api/tasks/dependencies</code></td><td>Returns Map&lt;taskId, List&lt;depIds&gt;&gt; for graph rendering</td><td>Any user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td><code>/api/tasks/export/csv</code></td><td>Download all tasks as CSV file</td><td>Any user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td><code>/api/tasks/suggest</code></td><td>Returns best next task (PriorityHeap + deps check)</td><td>Any user</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box" style="margin-top:20px;">
+    <strong>Response format:</strong> All endpoints return <code>ApiResponse&lt;T&gt;</code> with <code>{ "success": true, "data": ... }</code> or <code>{ "success": false, "message": "..." }</code> on error.
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 12 — E2E SCENARIOS
+████████████████████████████████ -->
+<div class="page-break" id="scenarios"></div>
+<div class="section">
+  <div class="section-label">Section 15</div>
+  <div class="section-title">End-to-End Demo Scenarios</div>
+  <p class="section-desc">8 complete scenarios tested against the live production app at Railway.</p>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 1</span> — Admin Login</h4>
+    <ol>
+      <li>Navigate to <code>/login</code></li>
+      <li>Enter username: <code>admin</code>, password: <code>admin123</code></li>
+      <li>Click "Sign In"</li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> Redirected to /dashboard. Sidebar shows "Admin Portal" link. Role badge shows "Admin".</div>
+  </div>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 2</span> — Create Categories</h4>
+    <ol>
+      <li>Navigate to <code>/categories</code></li>
+      <li>Add category: "Development" with blue color</li>
+      <li>Add category: "Bug Fix" with red color</li>
+      <li>Add category: "Design" with purple color</li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> 4 categories created (including "task1"). Color swatches visible in grid.</div>
+  </div>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 3</span> — Create Multiple Tasks</h4>
+    <ol>
+      <li>Navigate to <code>/tasks</code>, click "Add Task"</li>
+      <li>Create 6 tasks with different priorities (3–9), categories, start/end times</li>
+      <li>Add dependency: task "Deploy to staging" depends on "Fix login bug" (ID: 4)</li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> 6 tasks created. Dependency stored. Overlap detection prevented conflicting times.</div>
+  </div>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 4</span> — Search &amp; Filter</h4>
+    <ol>
+      <li>On <code>/tasks</code>, type "login" in search box</li>
+      <li>Click Filter</li>
+      <li>Also test: filter by Status=PENDING</li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> Search "login" returns 1 result: "Fix login bug". Status filter correctly scopes results.</div>
+  </div>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 5</span> — Kanban Board</h4>
+    <ol>
+      <li>Click "Kanban" tab on tasks page</li>
+      <li>Drag "Fix login bug" card from PENDING to COMPLETED column</li>
+      <li>Drag "Deploy to staging" card to RUNNING</li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> Cards move instantly. PATCH API called. Dashboard stats update on next visit.</div>
+  </div>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 6</span> — Dashboard Analytics</h4>
+    <ol>
+      <li>Navigate to <code>/dashboard</code></li>
+      <li>Observe stat cards: Total=6, Pending=4, Running=1, Completed=1</li>
+      <li>View Status Donut Chart and Priority Bar Chart</li>
+      <li>Click "What's Next?" button</li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> Charts render. Smart Suggest returns "P9 · Deploy to staging" — highest priority with deps satisfied.</div>
+  </div>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 7</span> — Admin Portal</h4>
+    <ol>
+      <li>Click "Admin Portal" in sidebar</li>
+      <li>View system-wide stats (6 tasks, 3 users)</li>
+      <li>Go to "Manage Users" → change testuser role to ADMIN via dropdown</li>
+      <li>Click "Disable" on postgres user</li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> Role change saved instantly. Disabled user cannot log in until re-enabled.</div>
+  </div>
+
+  <div class="scenario">
+    <h4><span class="badge badge-green">✓ Scenario 8</span> — Regular User (RBAC)</h4>
+    <ol>
+      <li>Logout (sidebar logout button)</li>
+      <li>Login as <code>testuser</code> / <code>test123</code></li>
+      <li>Check sidebar — no "Admin Portal" link</li>
+      <li>Navigate directly to <code>/admin</code></li>
+    </ol>
+    <div class="result"><i class="fa-solid fa-circle-check"></i> Sidebar shows no Admin Portal. Direct /admin access returns 403 Forbidden. Testuser sees only their own 1 task.</div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ████████████████████████████████
+     PAGE 13 — DEPLOYMENT
+████████████████████████████████ -->
+<div class="page-break" id="deployment"></div>
+<div class="section">
+  <div class="section-label">Section 14</div>
+  <div class="section-title">Deployment Architecture</div>
+
+  <div class="deploy-grid">
+    <div class="deploy-card">
+      <h4><i class="fa-solid fa-train" style="color:#a855f7"></i> Railway (Hosting)</h4>
+      <ul>
+        <li>Auto-detect Dockerfile or Maven build</li>
+        <li>Trigger: git push to master branch</li>
+        <li>Environment variables in dashboard</li>
+        <li>Custom domain or .up.railway.app URL</li>
+        <li>IPv6 network (requires Session Pooler)</li>
+      </ul>
+    </div>
+    <div class="deploy-card">
+      <h4><i class="fa-solid fa-database" style="color:#3ecf8e"></i> Supabase (PostgreSQL)</h4>
+      <ul>
+        <li>Free tier: 500MB storage</li>
+        <li>Session Pooler on port 5432</li>
+        <li>Region: AWS ap-southeast-2</li>
+        <li>SSL required: <code>sslmode=require</code></li>
+        <li>Connection via <code>aws-1-...</code> hostname</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:28px; font-size:15px; font-weight:700;">Key Problem Solved</h3>
+  <div class="warn-box" style="margin-top:12px;">
+    <strong>⚠ Railway is IPv6-only.</strong> Supabase's direct connection (<code>db.xxx.supabase.co:5432</code>) only accepts IPv4. The fix: use the <strong>Session Pooler</strong> URL (<code>aws-1-ap-southeast-2.pooler.supabase.com:5432</code>) which is dual-stack and accepts both.
+  </div>
+  <div class="warn-box">
+    <strong>⚠ JPQL lower(bytea) error.</strong> PostgreSQL couldn't infer parameter type in <code>LOWER(:search)</code>. The fix: <code>LOWER(CONCAT('%', CAST(:search AS string), '%'))</code> forces the type cast explicitly.
+  </div>
+
+  <pre style="margin-top:20px;"># Production Spring properties
+spring.datasource.url=${DATABASE_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.hikari.connection-timeout=30000
+spring.datasource.hikari.maximum-pool-size=3
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect</pre>
+</div>
+
+<!-- ████████████████████████████████
+     FOOTER
+████████████████████████████████ -->
+<div class="doc-footer">
+  <p><strong>Task Scheduler</strong> — Built with Spring Boot 3.5 · Java 17 · PostgreSQL · D3.js · Chart.js</p>
+  <p style="margin-top:8px;">Deployed at Railway · Database at Supabase · Source code on GitHub</p>
+  <p style="margin-top:8px; opacity:0.5;">Generated June 2026 · This document is print-ready — use Ctrl+P / Cmd+P or the "Save as PDF" button</p>
+</div>
+
+</body>
+</html>
