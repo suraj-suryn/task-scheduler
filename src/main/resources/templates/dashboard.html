@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout :: layout('Dashboard', ~{::main-content})}"
@@ -198,7 +198,7 @@
         new Chart(document.getElementById('priorityChart'), {
           type: 'bar',
           data: {
-            labels: ['Low (1–3)', 'Medium (4–6)', 'High (7–10)'],
+            labels: ['Low (1â€“3)', 'Medium (4â€“6)', 'High (7â€“10)'],
             datasets: [{
               label: 'Tasks',
               data: [low, med, high],
@@ -222,7 +222,7 @@
           document.getElementById('suggest-banner').classList.add('hidden');
           document.getElementById('suggest-empty').classList.add('hidden');
           if (res.data) {
-            document.getElementById('suggest-name').textContent = 'P' + res.data.priority + ' · ' + res.data.name;
+            document.getElementById('suggest-name').textContent = 'P' + res.data.priority + ' Â· ' + res.data.name;
             document.getElementById('suggest-desc').textContent = res.data.description || '';
             document.getElementById('suggest-banner').classList.remove('hidden');
           } else {
@@ -231,108 +231,6 @@
         });
     }
   </script>
-
-</th:block>
-</body>
-</html>
-
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-    <p class="text-gray-500 text-sm mt-1">Welcome back, <span class="font-semibold text-indigo-600" th:text="${#authentication.name}">User</span>!</p>
-  </div>
-
-  <!-- Stat cards -->
-  <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 col-span-1">
-      <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Total</p>
-      <p class="text-3xl font-bold text-gray-800 mt-1" th:text="${stats.total}">0</p>
-      <div class="mt-2 text-indigo-500 text-sm"><i class="fa-solid fa-layer-group"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100 col-span-1">
-      <p class="text-xs text-blue-500 font-medium uppercase tracking-wide">Pending</p>
-      <p class="text-3xl font-bold text-blue-700 mt-1" th:text="${stats.pending}">0</p>
-      <div class="mt-2 text-blue-400 text-sm"><i class="fa-solid fa-clock"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-yellow-100 col-span-1">
-      <p class="text-xs text-yellow-600 font-medium uppercase tracking-wide">Running</p>
-      <p class="text-3xl font-bold text-yellow-600 mt-1" th:text="${stats.running}">0</p>
-      <div class="mt-2 text-yellow-400 text-sm"><i class="fa-solid fa-spinner fa-spin"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-green-100 col-span-1">
-      <p class="text-xs text-green-600 font-medium uppercase tracking-wide">Completed</p>
-      <p class="text-3xl font-bold text-green-600 mt-1" th:text="${stats.completed}">0</p>
-      <div class="mt-2 text-green-400 text-sm"><i class="fa-solid fa-circle-check"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-red-100 col-span-1">
-      <p class="text-xs text-red-500 font-medium uppercase tracking-wide">Failed</p>
-      <p class="text-3xl font-bold text-red-500 mt-1" th:text="${stats.failed}">0</p>
-      <div class="mt-2 text-red-400 text-sm"><i class="fa-solid fa-circle-xmark"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-orange-100 col-span-1">
-      <p class="text-xs text-orange-600 font-medium uppercase tracking-wide">Overdue</p>
-      <p class="text-3xl font-bold text-orange-600 mt-1" th:text="${stats.overdue}">0</p>
-      <div class="mt-2 text-orange-400 text-sm"><i class="fa-solid fa-triangle-exclamation"></i></div>
-    </div>
-  </div>
-
-  <!-- Overdue warning bar -->
-  <div th:if="${stats.overdue > 0}" class="mb-6 flex items-center gap-3 bg-orange-50 border border-orange-200 text-orange-700 px-5 py-3 rounded-xl text-sm">
-    <i class="fa-solid fa-triangle-exclamation text-orange-500"></i>
-    <span>You have <strong th:text="${stats.overdue}">0</strong> overdue task(s). <a th:href="@{/tasks(status=PENDING)}" class="underline font-semibold">View them</a></span>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Upcoming Tasks -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-semibold text-gray-800"><i class="fa-solid fa-calendar-days text-indigo-500 mr-2"></i>Upcoming Tasks</h2>
-        <a th:href="@{/tasks}" class="text-xs text-indigo-600 hover:underline">View all</a>
-      </div>
-      <div th:if="${#lists.isEmpty(stats.upcomingTasks)}" class="text-gray-400 text-sm py-4 text-center">
-        <i class="fa-solid fa-inbox text-2xl mb-2 block text-gray-300"></i>No upcoming tasks
-      </div>
-      <ul class="divide-y divide-gray-50" th:unless="${#lists.isEmpty(stats.upcomingTasks)}">
-        <li th:each="t : ${stats.upcomingTasks}" class="py-3 flex items-center gap-3">
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium status-PENDING">Pending</span>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-800 truncate" th:text="${t.name}">Task</p>
-            <p class="text-xs text-gray-400" th:text="${#temporals.format(t.endTime, 'dd MMM yyyy, HH:mm')}">Date</p>
-          </div>
-          <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-medium" th:text="'P' + ${t.priority}">P1</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Recently Completed -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-semibold text-gray-800"><i class="fa-solid fa-circle-check text-green-500 mr-2"></i>Recently Completed</h2>
-        <a th:href="@{/tasks(status=COMPLETED)}" class="text-xs text-indigo-600 hover:underline">View all</a>
-      </div>
-      <div th:if="${#lists.isEmpty(stats.recentCompleted)}" class="text-gray-400 text-sm py-4 text-center">
-        <i class="fa-solid fa-inbox text-2xl mb-2 block text-gray-300"></i>Nothing completed yet
-      </div>
-      <ul class="divide-y divide-gray-50" th:unless="${#lists.isEmpty(stats.recentCompleted)}">
-        <li th:each="t : ${stats.recentCompleted}" class="py-3 flex items-center gap-3">
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium status-COMPLETED">Done</span>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-800 truncate" th:text="${t.name}">Task</p>
-            <p class="text-xs text-gray-400" th:if="${t.completedAt}" th:text="${#temporals.format(t.completedAt, 'dd MMM yyyy, HH:mm')}">Date</p>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Quick actions -->
-  <div class="mt-6 flex flex-wrap gap-3">
-    <a th:href="@{/tasks}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition">
-      <i class="fa-solid fa-plus"></i>New Task
-    </a>
-    <a th:href="@{/categories}" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-lg transition">
-      <i class="fa-solid fa-tag text-indigo-500"></i>Manage Categories
-    </a>
-  </div>
 
 </th:block>
 </body>
