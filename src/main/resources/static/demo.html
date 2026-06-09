@@ -579,8 +579,8 @@ DB_PASSWORD=*****</pre>
       <tr>
         <td><strong>📱 Responsive Design</strong></td>
         <td>All pages</td>
-        <td>Mobile-first layout: sidebar slides in, bottom nav bar on mobile, scrollable tables, stacked grids on small screens.</td>
-        <td>Tailwind CSS responsive utilities</td>
+        <td>Mobile-first layout: <strong>sliding drawer sidebar</strong> (300ms ease-in-out, w-72, fading overlay, × close button inside drawer), mobile top bar with hamburger, bottom nav bar, scrollable tables, stacked grids on small screens. Desktop sidebar is always visible inline.</td>
+        <td>Tailwind CSS + HTML5 Drag API</td>
         <td><span class="badge badge-green">Live</span></td>
       </tr>
     </tbody>
@@ -795,6 +795,9 @@ DB_PASSWORD=*****</pre>
   </div>
   <div class="warn-box">
     <strong>⚠ JPQL lower(bytea) error.</strong> PostgreSQL couldn't infer parameter type in <code>LOWER(:search)</code>. The fix: <code>LOWER(CONCAT('%', CAST(:search AS string), '%'))</code> forces the type cast explicitly.
+  </div>
+  <div class="info-box">
+    <strong>ℹ Sidebar sliding drawer implementation.</strong> The sidebar uses Tailwind's <code>translate-x</code> utilities with a 300ms ease-in-out transition. Mobile: <code>fixed inset-y-0 left-0 z-30 w-72 -translate-x-full</code> — opens to <code>translate-x-0</code>. A fading overlay (<code>transition-opacity duration-300</code>) and an × close button inside the drawer header let users dismiss it. Desktop (<code>lg:</code>): sidebar is <code>relative</code> and always visible — no drawer behaviour at all.
   </div>
 
   <pre style="margin-top:20px;"># Production Spring properties
