@@ -24,7 +24,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByAssignedToAndStatus(Long userId, TaskStatus status);
 
     @Query("SELECT t FROM Task t WHERE t.assignedTo = :userId " +
-           "AND (:search IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND (:search IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:status IS NULL OR t.status = :status) " +
            "AND (:categoryId IS NULL OR t.category.id = :categoryId)")
     List<Task> searchTasks(@Param("userId") Long userId,
@@ -33,7 +33,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
                            @Param("categoryId") Long categoryId);
 
     @Query("SELECT t FROM Task t WHERE " +
-           "(:search IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "(:search IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:status IS NULL OR t.status = :status) " +
            "AND (:categoryId IS NULL OR t.category.id = :categoryId)")
     List<Task> searchAllTasks(@Param("search") String search,
