@@ -85,6 +85,14 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
+    @GetMapping("/graph")
+    public String dependencyGraph(Model model) {
+        Long userId = securityUtils.getCurrentUserId();
+        boolean isAdmin = securityUtils.isAdmin();
+        model.addAttribute("tasks", taskService.getTasksForUser(userId, isAdmin, null, null, null));
+        return "tasks-graph";
+    }
+
     @PostMapping("/update/{id}")
     public String updateTask(@PathVariable Long id,
                              @Valid @ModelAttribute("task") Task task,

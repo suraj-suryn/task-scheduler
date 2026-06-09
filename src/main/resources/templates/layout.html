@@ -42,6 +42,22 @@
     .status-COMPLETED { background:#dcfce7; color:#15803d; }
     .status-FAILED    { background:#fee2e2; color:#b91c1c; }
     .nav-active { background:#4338ca !important; }
+    /* Dark mode */
+    body.dark { background:#0f172a; color:#e2e8f0; }
+    body.dark .bg-white { background:#1e293b !important; }
+    body.dark .bg-gray-50 { background:#0f172a !important; }
+    body.dark .bg-gray-100 { background:#1e293b !important; }
+    body.dark .border-gray-100, body.dark .border-gray-200 { border-color:#334155 !important; }
+    body.dark .text-gray-800 { color:#e2e8f0 !important; }
+    body.dark .text-gray-700 { color:#cbd5e1 !important; }
+    body.dark .text-gray-600 { color:#94a3b8 !important; }
+    body.dark .text-gray-500 { color:#64748b !important; }
+    body.dark .text-gray-400 { color:#475569 !important; }
+    body.dark .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
+    body.dark input, body.dark select, body.dark textarea { background:#1e293b !important; color:#e2e8f0 !important; border-color:#334155 !important; }
+    body.dark table thead { background:#1e293b !important; }
+    body.dark tr:hover { background:#1e293b !important; }
+    body.dark .divide-gray-50 > * { border-color:#334155 !important; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex">
@@ -91,6 +107,11 @@
           <p class="text-indigo-300 text-xs" sec:authorize="hasAuthority('ROLE_ADMIN')">Admin</p>
           <p class="text-indigo-300 text-xs" sec:authorize="!hasAuthority('ROLE_ADMIN')">Member</p>
         </div>
+        <!-- Dark mode toggle -->
+        <button onclick="toggleDark()" id="dark-toggle" title="Toggle dark mode"
+                class="ml-auto w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-700 hover:bg-indigo-600 text-indigo-200 hover:text-white transition text-sm">
+          <i id="dark-icon" class="fa-solid fa-moon"></i>
+        </button>
       </div>
       <form th:action="@{/logout}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
@@ -140,6 +161,21 @@
       s.classList.toggle('-translate-x-full');
       o.classList.toggle('hidden');
     }
+
+    // Dark mode
+    function toggleDark() {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('darkMode', isDark ? '1' : '0');
+      document.getElementById('dark-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+    (function() {
+      if (localStorage.getItem('darkMode') === '1') {
+        document.body.classList.add('dark');
+        const icon = document.getElementById('dark-icon');
+        if (icon) icon.className = 'fa-solid fa-sun';
+      }
+    })();
+
     // Auto-dismiss toasts after 4s
     setTimeout(() => {
       document.querySelectorAll('.toast').forEach(t => {

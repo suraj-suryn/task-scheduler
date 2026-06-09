@@ -7,14 +7,21 @@ import com.suraj.scheduler.entity.TaskStatus;
 import com.suraj.scheduler.repository.TaskRepository;
 import com.suraj.scheduler.security.SecurityUtils;
 import com.suraj.scheduler.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Tasks API", description = "Task management and scheduling endpoints")
 public class TaskRestController {
 
     private final TaskService taskService;
@@ -99,6 +106,7 @@ public class TaskRestController {
     }
 
     @GetMapping("/tasks/dependencies")
+    @Operation(summary = "Get task dependency graph", description = "Returns a map of taskId -> list of dependency task IDs")
     public ResponseEntity<ApiResponse<Map<Long, List<Long>>>> getDependencyGraph() {
         List<Task> tasks = taskService.getAllTasks();
         Map<Long, List<Long>> graph = new HashMap<>();
@@ -113,5 +121,74 @@ public class TaskRestController {
         }
 
         return ResponseEntity.ok(ApiResponse.success(graph));
+    }
+
+    @GetMapping("/tasks/export/csv")
+    @Operation(summary = "Export tasks as CSV", description = "Downloads all tasks for the current user as a CSV file")
+    public void exportCsv(HttpServletResponse response) throws IOException {
+        Long userId = securityUtils.getCurrentUserId();
+        boolean isAdmin = securityUtils.isAdmin();
+        List<Task> tasks = taskService.getTasksForUser(userId, isAdmin, null, null, null);
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"tasks-" +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmm")) + ".csv\"");
+
+        PrintWriter writer = response.getWriter();
+        writer.println("ID,Name,Description,Priority,Status,Category,Start Time,End Time,Recurrence");
+        for (Task t : tasks) {
+            writer.printf("%d,\"%s\",\"%s\",%d,%s,\"%s\",%s,%s,%s%n",
+                    t.getId(),
+                    escape(t.getName()),
+                    escape(t.getDescription()),
+                    t.getPriority(),
+                    t.getStatus(),
+                    t.getCategory() != null ? escape(t.getCategory().getName()) : "",
+                    t.getStartTime() != null ? t.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : "",
+                    t.getEndTime() != null ? t.getEndTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : "",
+                    t.getRecurrenceType() != null ? t.getRecurrenceType() : "NONE"
+            );
+        }
+        writer.flush();
+    }
+
+    private String escape(String value) {
+        if (value == null) return "";
+        return value.replace("\"", "\"\"");
+    }
+
+    @GetMapping("/tasks/suggest")
+    @Operation(summary = "Suggest next task", description = "Returns the highest-priority pending task whose dependencies are all completed")
+    public ResponseEntity<ApiResponse<Task>> suggestNextTask() {
+        Long userId = securityUtils.getCurrentUserId();
+        boolean isAdmin = securityUtils.isAdmin();
+        List<Task> tasks = taskService.getTasksForUser(userId, isAdmin, null, null, null);
+
+        // Collect completed task IDs
+        Set<Long> completedIds = new HashSet<>();
+        for (Task t : tasks) {
+            if (t.getStatus() == TaskStatus.COMPLETED) completedIds.add(t.getId());
+        }
+
+        // Find highest-priority PENDING task whose all dependencies are completed
+        Task best = null;
+        for (Task t : tasks) {
+            if (t.getStatus() != TaskStatus.PENDING) continue;
+            boolean depsOk = true;
+            if (t.getDependencies() != null && !t.getDependencies().isBlank()) {
+                for (String dep : t.getDependencies().split(",")) {
+                    try {
+                        long depId = Long.parseLong(dep.trim());
+                        if (!completedIds.contains(depId)) { depsOk = false; break; }
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+            if (depsOk) {
+                if (best == null || t.getPriority() > best.getPriority()) best = t;
+            }
+        }
+
+        if (best == null) return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.ok(ApiResponse.success(best));
     }
 }

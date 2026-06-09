@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout('Dependency Graph', ~{::main-content})}"
+      lang="en">
+<head><title>Dependency Graph</title></head>
+<body>
+<th:block th:fragment="main-content">
+
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900"><i class="fa-solid fa-diagram-project text-purple-500 mr-2"></i>Dependency Graph</h1>
+      <p class="text-gray-500 text-sm mt-1">Visual map of task dependencies — arrows point from a task to its prerequisite</p>
+    </div>
+    <a th:href="@{/tasks}" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg transition">
+      <i class="fa-solid fa-arrow-left"></i>Back to Tasks
+    </a>
+  </div>
+
+  <!-- Legend -->
+  <div class="flex flex-wrap gap-4 mb-4 text-xs font-medium">
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-400 inline-block"></span>Pending</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>Running</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>Completed</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>Failed</span>
+    <span class="ml-auto text-gray-400 italic">Drag nodes to rearrange • Scroll to zoom</span>
+  </div>
+
+  <!-- Graph canvas -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" style="height: 520px; position: relative;">
+    <svg id="graph-svg" width="100%" height="100%">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#6366f1"/>
+        </marker>
+      </defs>
+      <g id="graph-g"></g>
+    </svg>
+    <div id="no-deps" class="hidden absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+      <i class="fa-solid fa-diagram-project text-5xl mb-3 text-gray-200"></i>
+      <p class="text-sm font-medium">No task dependencies defined yet.</p>
+      <p class="text-xs mt-1">Add dependencies when creating a task (comma-separated IDs).</p>
+    </div>
+  </div>
+
+  <!-- Tooltip -->
+  <div id="tooltip" class="hidden fixed z-50 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 pointer-events-none shadow-xl max-w-xs"></div>
+
+  <!-- D3.js v7 -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script th:inline="javascript">
+    const tasks = /*[[${tasks}]]*/ [];
+
+    // Build nodes and links from task dependency data
+    const nodeMap = {};
+    tasks.forEach(t => { nodeMap[t.id] = t; });
+
+    const nodes = tasks.map(t => ({
+      id: t.id,
+      name: t.name,
+      status: t.status,
+      priority: t.priority,
+      description: t.description || ''
+    }));
+
+    const links = [];
+    tasks.forEach(t => {
+      if (!t.dependencies) return;
+      t.dependencies.split(',').forEach(dep => {
+        const depId = parseInt(dep.trim());
+        if (!isNaN(depId) && nodeMap[depId]) {
+          links.push({ source: t.id, target: depId });
+        }
+      });
+    });
+
+    if (links.length === 0) {
+      document.getElementById('no-deps').classList.remove('hidden');
+    }
+
+    const statusColor = {
+      PENDING: '#60a5fa',
+      RUNNING: '#fbbf24',
+      COMPLETED: '#22c55e',
+      FAILED: '#f87171'
+    };
+
+    const svg = d3.select('#graph-svg');
+    const g = svg.select('#graph-g');
+    const width = svg.node().clientWidth || 800;
+    const height = svg.node().clientHeight || 500;
+
+    // Zoom & pan
+    svg.call(d3.zoom().scaleExtent([0.3, 3]).on('zoom', e => g.attr('transform', e.transform)));
+
+    const sim = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(120))
+      .force('charge', d3.forceManyBody().strength(-300))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collide', d3.forceCollide(50));
+
+    const link = g.append('g').selectAll('line')
+      .data(links).join('line')
+      .attr('stroke', '#6366f1')
+      .attr('stroke-width', 2)
+      .attr('marker-end', 'url(#arrow)')
+      .attr('opacity', 0.7);
+
+    const node = g.append('g').selectAll('g')
+      .data(nodes).join('g')
+      .attr('cursor', 'grab')
+      .call(d3.drag()
+        .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+        .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
+        .on('end',   (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
+      );
+
+    node.append('circle')
+      .attr('r', 26)
+      .attr('fill', d => statusColor[d.status] || '#94a3b8')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 3)
+      .attr('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))');
+
+    node.append('text')
+      .text(d => 'P' + d.priority)
+      .attr('text-anchor', 'middle')
+      .attr('dy', '0.35em')
+      .attr('font-size', 11)
+      .attr('font-weight', 'bold')
+      .attr('fill', '#fff')
+      .attr('pointer-events', 'none');
+
+    node.append('text')
+      .text(d => d.name.length > 14 ? d.name.slice(0, 13) + '…' : d.name)
+      .attr('text-anchor', 'middle')
+      .attr('dy', 40)
+      .attr('font-size', 11)
+      .attr('fill', '#374151')
+      .attr('pointer-events', 'none');
+
+    // Tooltip
+    const tooltip = document.getElementById('tooltip');
+    node.on('mouseenter', function(event, d) {
+      tooltip.innerHTML = `<strong>${d.name}</strong><br>Status: ${d.status} &nbsp;|&nbsp; Priority: ${d.priority}${d.description ? '<br><span style="color:#9ca3af">' + d.description + '</span>' : ''}`;
+      tooltip.classList.remove('hidden');
+    }).on('mousemove', function(event) {
+      tooltip.style.left = (event.clientX + 14) + 'px';
+      tooltip.style.top  = (event.clientY - 10) + 'px';
+    }).on('mouseleave', function() {
+      tooltip.classList.add('hidden');
+    });
+
+    sim.on('tick', () => {
+      link
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
+      node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+  </script>
+
+</th:block>
+</body>
+</html>
