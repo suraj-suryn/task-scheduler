@@ -8,6 +8,7 @@ import com.suraj.scheduler.repository.TaskRepository;
 import com.suraj.scheduler.security.SecurityUtils;
 import com.suraj.scheduler.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -124,6 +125,7 @@ public class TaskRestController {
     }
 
     @GetMapping("/tasks/export/csv")
+    @Hidden
     @Operation(summary = "Export tasks as CSV", description = "Downloads all tasks for the current user as a CSV file")
     public void exportCsv(HttpServletResponse response) throws IOException {
         Long userId = securityUtils.getCurrentUserId();
