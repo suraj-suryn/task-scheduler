@@ -1,33 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-  <th:block th:fragment="head(title)">
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="${title} + ' — Task Scheduler'">Task Scheduler</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-    <style>
-      [x-cloak] { display: none !important; }
-      .sidebar-link.active { background-color: #4f46e5; color: white; }
-      .toast { animation: slideIn 0.3s ease; }
-      @keyframes slideIn { from { transform: translateX(100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
-      .status-PENDING { background:#dbeafe; color:#1d4ed8; }
-      .status-RUNNING { background:#fef9c3; color:#b45309; }
-      .status-COMPLETED { background:#dcfce7; color:#15803d; }
-      .status-FAILED { background:#fee2e2; color:#b91c1c; }
-    </style>
-  </th:block>
-</head>
-<body>
-
-<!-- ===== SIDEBAR LAYOUT ===== -->
-<th:block th:fragment="layout(title, content)">
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      lang="en">
+      lang="en"
+      th:fragment="layout(title, content)">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -283,10 +258,6 @@
       });
     })();
   </script>
-
-</body>
-</html>
-</th:block>
 
 </body>
 </html>
