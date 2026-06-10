@@ -78,6 +78,10 @@
          class="flex items-center gap-3 px-3 py-2 rounded-lg text-indigo-100 hover:bg-indigo-700 transition text-sm font-medium">
         <i class="fa-solid fa-tag w-5 text-center"></i>Categories
       </a>
+      <a id="nav-interview" th:href="@{/interview}"
+         class="flex items-center gap-3 px-3 py-2 rounded-lg text-indigo-100 hover:bg-indigo-700 transition text-sm font-medium">
+        <i class="fa-solid fa-comments w-5 text-center"></i>Interview Q&amp;A
+      </a>
       <div sec:authorize="hasAuthority('ROLE_ADMIN')" class="pt-3 pb-1">
         <p class="text-indigo-400 text-xs font-semibold uppercase px-3 mb-1">Admin</p>
         <a id="nav-admin" th:href="@{/admin}"
@@ -133,8 +137,8 @@
         <button onclick="toggleDark()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:text-indigo-600 transition">
           <i id="dark-icon-mobile" class="fa-solid fa-moon text-sm"></i>
         </button>
-        <button onclick="document.getElementById('add-task-modal') && document.getElementById('add-task-modal').classList.remove('hidden')"
-                class="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
+        <button onclick="handlePlusBtn()"
+                class="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition" title="Quick add">
           <i class="fa-solid fa-plus text-sm"></i>
         </button>
       </div>
@@ -168,11 +172,15 @@
         <i class="fa-solid fa-list-check text-base"></i>
         <span class="text-xs font-medium">Tasks</span>
       </a>
-      <a th:href="@{/categories}" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-indigo-600 transition min-w-0">
+      <a th:href="@{/categories}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-gray-500 hover:text-indigo-600 transition min-w-0">
         <i class="fa-solid fa-tag text-base"></i>
         <span class="text-xs font-medium">Categories</span>
       </a>
-      <a sec:authorize="hasAuthority('ROLE_ADMIN')" th:href="@{/admin}" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-red-600 transition min-w-0">
+      <a th:href="@{/interview}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-gray-500 hover:text-indigo-600 transition min-w-0">
+        <i class="fa-solid fa-comments text-base"></i>
+        <span class="text-xs font-medium">Q&amp;A</span>
+      </a>
+      <a sec:authorize="hasAuthority('ROLE_ADMIN')" th:href="@{/admin}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-gray-500 hover:text-red-600 transition min-w-0">
         <i class="fa-solid fa-shield-halved text-base"></i>
         <span class="text-xs font-medium">Admin</span>
       </a>
@@ -235,6 +243,7 @@
         'nav-dashboard': ['/dashboard', '/'],
         'nav-tasks': ['/tasks'],
         'nav-categories': ['/categories'],
+        'nav-interview': ['/interview'],
         'nav-admin': ['/admin']
       };
       for (var id in map) {
@@ -244,6 +253,18 @@
         }
       }
     })();
+
+    // Context-aware + button
+    function handlePlusBtn() {
+      var path = window.location.pathname;
+      var modal = document.getElementById('add-task-modal');
+      if (modal) { modal.classList.remove('hidden'); return; }
+      if (path.startsWith('/categories')) {
+        var nameInput = document.querySelector('input[name="name"]');
+        if (nameInput) { nameInput.scrollIntoView({behavior:'smooth',block:'center'}); nameInput.focus(); return; }
+      }
+      window.location.href = '/tasks?add=1';
+    }
 
     // Bottom nav active highlight
     (function() {

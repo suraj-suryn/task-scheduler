@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Interview Q&amp;A', ~{::main-content})}"
+      lang="en">
+<head><title>Interview Q&amp;A</title></head>
+<body>
+<th:block th:fragment="main-content">
+
+  <!-- Header -->
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900"><i class="fa-solid fa-comments text-indigo-500 mr-2"></i>Interview Q&amp;A</h1>
+      <p class="text-gray-500 text-sm mt-1">Technical questions &amp; answers about this Task Scheduler project</p>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="expandAll()" class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition">
+        <i class="fa-solid fa-chevron-down"></i><span class="hidden sm:inline">Expand All</span>
+      </button>
+      <button onclick="collapseAll()" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg transition">
+        <i class="fa-solid fa-chevron-up"></i><span class="hidden sm:inline">Collapse All</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Category filter pills -->
+  <div class="flex flex-wrap gap-2 mb-6">
+    <button onclick="filterCat('all')" class="cat-pill active-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-indigo-300 bg-indigo-50 text-indigo-700 transition" data-cat="all">All</button>
+    <button onclick="filterCat('architecture')" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600 transition" data-cat="architecture">Architecture</button>
+    <button onclick="filterCat('dsa')" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600 transition" data-cat="dsa">DSA</button>
+    <button onclick="filterCat('spring')" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600 transition" data-cat="spring">Spring Boot</button>
+    <button onclick="filterCat('database')" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600 transition" data-cat="database">Database</button>
+    <button onclick="filterCat('security')" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600 transition" data-cat="security">Security</button>
+    <button onclick="filterCat('frontend')" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600 transition" data-cat="frontend">Frontend</button>
+    <button onclick="filterCat('deployment')" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600 transition" data-cat="deployment">Deployment</button>
+  </div>
+
+  <!-- Q&A List -->
+  <div id="qa-list" class="space-y-3">
+
+    <!-- ===== ARCHITECTURE ===== -->
+    <div class="qa-card" data-cat="architecture">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">1</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">What is this application and what problem does it solve?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-indigo-50 border border-indigo-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        It's a <strong>personal task scheduling and tracking web application</strong>. The core problem: most to-do apps don't enforce <em>time conflicts</em> (you can schedule two tasks at the same time), don't validate <em>task dependencies</em> (task B starts before task A which it depends on), and don't automatically transition task statuses. This app solves all three with custom DSA — an IntervalTree for overlap detection, a DependencyGraph for cycle validation, and a scheduler engine for automatic status transitions.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="architecture">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">2</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">What tech stack did you use and why?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-indigo-50 border border-indigo-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        <strong>Spring Boot 3.5 (Java 17)</strong> — production-ready, convention-over-configuration, built-in security and scheduling. <strong>Thymeleaf</strong> for server-side rendering — the app is CRUD-heavy with form submissions, so SSR gives faster initial load and simpler state management without a separate SPA. <strong>PostgreSQL</strong> on Supabase for persistence. <strong>Tailwind CSS</strong> CDN for responsive UI without a build pipeline. Deployed on <strong>Railway</strong> with auto-deploy on git push.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="architecture">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">3</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How is the application layered?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-indigo-50 border border-indigo-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        Standard 3-tier: <strong>Controller → Service → Repository</strong>. I kept two controllers separate — <code class="bg-white px-1 rounded">TaskController</code> handles Thymeleaf views and <code class="bg-white px-1 rounded">TaskRestController</code> handles JSON REST calls (status updates, smart suggest) — keeping view and API concerns cleanly separated. Business logic lives entirely in <code class="bg-white px-1 rounded">TaskServiceImpl</code>. JPA repositories handle persistence. Custom DSA classes (<code class="bg-white px-1 rounded">IntervalTree</code>, <code class="bg-white px-1 rounded">DependencyGraph</code>, <code class="bg-white px-1 rounded">PriorityHeap</code>) are used by the service layer.
+      </div>
+    </div>
+
+    <!-- ===== DSA ===== -->
+    <div class="qa-card" data-cat="dsa">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold flex items-center justify-center">4</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">What custom data structures did you implement?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-purple-50 border border-purple-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        Three custom DSA classes: <br/><br/>
+        1. <strong>IntervalTree</strong> — detects time-overlapping tasks. Each node stores a <code class="bg-white px-1 rounded">[startTime, endTime]</code> interval and the max endTime of its subtree. Overlap check is O(log n) vs O(n²) brute force.<br/><br/>
+        2. <strong>PriorityHeap</strong> — min-heap ordering tasks by priority + deadline for the "What's Next?" suggestion. Insert O(log n), peek O(1).<br/><br/>
+        3. <strong>DependencyGraph</strong> — adjacency list + DFS-based cycle detection to validate task dependency chains before save.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="dsa">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold flex items-center justify-center">5</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How does your IntervalTree detect task overlaps?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-purple-50 border border-purple-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        Each node stores its interval <code class="bg-white px-1 rounded">[start, end]</code> and the <strong>max endTime</strong> of its entire subtree — this is what makes range queries efficient. When inserting a new task, we traverse the tree: if the current node's max is less than the new task's start, we can prune the entire subtree (no overlaps possible). Overlap condition: <code class="bg-white px-1 rounded">start1 &lt; end2 &amp;&amp; start2 &lt; end1</code>. If overlap found, a <code class="bg-white px-1 rounded">TaskOverlapException</code> is thrown before the task is saved.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="dsa">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold flex items-center justify-center">6</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How do you detect circular dependencies?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-purple-50 border border-purple-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        <code class="bg-white px-1 rounded">DependencyGraph</code> builds a directed adjacency list where an edge from A → B means "A depends on B". Before saving any task, I run DFS with two sets: <code class="bg-white px-1 rounded">visited</code> and <code class="bg-white px-1 rounded">recursionStack</code>. If DFS encounters a node already in <code class="bg-white px-1 rounded">recursionStack</code>, a cycle exists → throws <code class="bg-white px-1 rounded">DependencyCycleException</code>. This prevents infinite loops in the scheduling engine.
+      </div>
+    </div>
+
+    <!-- ===== SPRING BOOT ===== -->
+    <div class="qa-card" data-cat="spring">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center">7</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How does the task scheduling engine work?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-green-50 border border-green-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        <code class="bg-white px-1 rounded">TaskSchedulerEngine</code> is a <code class="bg-white px-1 rounded">@Service</code> using Spring's <code class="bg-white px-1 rounded">@Scheduled</code>. It runs periodically and:<br/><br/>
+        1. Queries tasks where <code class="bg-white px-1 rounded">startTime &lt;= now AND status = PENDING</code> → transitions to <code class="bg-white px-1 rounded">RUNNING</code><br/>
+        2. Queries tasks where <code class="bg-white px-1 rounded">endTime &lt;= now AND status = RUNNING</code> → transitions to <code class="bg-white px-1 rounded">COMPLETED</code><br/>
+        3. Overdue checks: tasks still PENDING past their endTime → <code class="bg-white px-1 rounded">FAILED</code>
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="spring">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center">8</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How do you handle exceptions globally?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-green-50 border border-green-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        Two <code class="bg-white px-1 rounded">@ControllerAdvice</code> classes: <code class="bg-white px-1 rounded">RestExceptionHandler</code> for REST endpoints (returns JSON with HTTP status) and <code class="bg-white px-1 rounded">UiExceptionHandler</code> for Thymeleaf views (sets <code class="bg-white px-1 rounded">errorMessage</code> flash attribute and redirects). Custom exceptions: <code class="bg-white px-1 rounded">TaskOverlapException</code> (409), <code class="bg-white px-1 rounded">DependencyCycleException</code> (400), <code class="bg-white px-1 rounded">InvalidTaskTimeException</code> (400), <code class="bg-white px-1 rounded">TaskNotFoundException</code> (404). This keeps controllers clean — they never catch exceptions directly.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="spring">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center">9</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">Why did you use two controllers — TaskController and TaskRestController?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-green-50 border border-green-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        Separation of concerns. <code class="bg-white px-1 rounded">TaskController</code> handles Thymeleaf form submissions and view rendering — it returns view names and uses redirect attributes. <code class="bg-white px-1 rounded">TaskRestController</code> handles async JavaScript calls — inline status dropdown changes, the "What's Next?" smart suggest, CSV export — returning JSON or binary. Mixing both in one controller would create confusing method signatures and inconsistent error handling.
+      </div>
+    </div>
+
+    <!-- ===== DATABASE ===== -->
+    <div class="qa-card" data-cat="database">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold flex items-center justify-center">10</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How is your Task entity modeled?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-yellow-50 border border-yellow-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        <code class="bg-white px-1 rounded">Task</code> has: <code class="bg-white px-1 rounded">name</code>, <code class="bg-white px-1 rounded">description</code>, <code class="bg-white px-1 rounded">priority</code> (int 1–10), <code class="bg-white px-1 rounded">startTime</code> / <code class="bg-white px-1 rounded">endTime</code> (LocalDateTime), <code class="bg-white px-1 rounded">status</code> (enum: PENDING/RUNNING/COMPLETED/FAILED), <code class="bg-white px-1 rounded">recurrenceType</code> (enum: NONE/DAILY/WEEKLY/MONTHLY), <code class="bg-white px-1 rounded">dependencies</code> (String — comma-separated task IDs), <code class="bg-white px-1 rounded">category</code> (@ManyToOne → Category), <code class="bg-white px-1 rounded">user</code> (@ManyToOne → User). Relationships use lazy loading; category and user are joined on task list queries.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="database">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold flex items-center justify-center">11</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How do you prevent one user from seeing another user's tasks?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-yellow-50 border border-yellow-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        All service queries filter by the authenticated user: <code class="bg-white px-1 rounded">taskRepository.findByUser(currentUser)</code>. The current user is resolved from <code class="bg-white px-1 rounded">SecurityContextHolder</code> via a <code class="bg-white px-1 rounded">SecurityUtils</code> helper. Admins can see all tasks via a separate query path. Task IDs in URLs (delete, update) are verified to belong to the requesting user before any mutation — otherwise 403/404 is returned.
+      </div>
+    </div>
+
+    <!-- ===== SECURITY ===== -->
+    <div class="qa-card" data-cat="security">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center">12</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How is authentication implemented?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-red-50 border border-red-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        Spring Security with <code class="bg-white px-1 rounded">UserDetailsService</code> + <code class="bg-white px-1 rounded">DaoAuthenticationProvider</code>. Passwords hashed with <strong>BCrypt</strong>. Session-based authentication (Spring's default). Roles: <code class="bg-white px-1 rounded">ROLE_USER</code> and <code class="bg-white px-1 rounded">ROLE_ADMIN</code>. Email verification flow: on registration, a UUID token is stored on the User entity and emailed; the user must click the link before they can log in. CSRF protection is enabled for all form submissions (token injected via Thymeleaf's <code class="bg-white px-1 rounded">th:name="${_csrf.parameterName}"</code>).
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="security">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center">13</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">What OWASP vulnerabilities did you guard against?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-red-50 border border-red-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        <strong>A1 Broken Access Control</strong> — user-scoped queries, admin-only routes protected via <code class="bg-white px-1 rounded">.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")</code>.<br/>
+        <strong>A2 Cryptographic Failures</strong> — BCrypt for passwords, never stored in plaintext.<br/>
+        <strong>A3 Injection</strong> — JPA repositories use parameterized queries, no raw SQL.<br/>
+        <strong>A7 CSRF</strong> — Spring Security CSRF tokens on all state-changing forms.<br/>
+        <strong>A5 Security Misconfiguration</strong> — credentials in environment variables, not hardcoded; H2 console restricted.
+      </div>
+    </div>
+
+    <!-- ===== FRONTEND ===== -->
+    <div class="qa-card" data-cat="frontend">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-pink-100 text-pink-600 text-xs font-bold flex items-center justify-center">14</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How did you make the app mobile-responsive?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-pink-50 border border-pink-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        <strong>Sliding drawer sidebar</strong> — hidden off-screen with <code class="bg-white px-1 rounded">-translate-x-full</code> on mobile, slides in with CSS transition on hamburger click. <strong>Mobile top bar</strong> with hamburger, logo, dark mode toggle, context-aware <code class="bg-white px-1 rounded">+</code> button. <strong>Bottom navigation bar</strong> for quick page access. <strong>Tables</strong> wrapped in <code class="bg-white px-1 rounded">overflow-x-auto</code> with <code class="bg-white px-1 rounded">min-width</code> so they scroll horizontally. <strong>Tailwind breakpoints</strong> (<code class="bg-white px-1 rounded">sm:</code>, <code class="bg-white px-1 rounded">lg:</code>) control grid columns — e.g. stat cards go from 2-col mobile to 6-col desktop.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="frontend">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-pink-100 text-pink-600 text-xs font-bold flex items-center justify-center">15</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">What was the trickiest bug you fixed?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-pink-50 border border-pink-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        A <strong>Thymeleaf double-render bug</strong>. The <code class="bg-white px-1 rounded">th:fragment="layout(...)"</code> was placed on a <code class="bg-white px-1 rounded">&lt;th:block&gt;</code> inside an outer <code class="bg-white px-1 rounded">&lt;html&gt;&lt;body&gt;</code> wrapper, and the fragment itself contained another <code class="bg-white px-1 rounded">&lt;!DOCTYPE html&gt;&lt;html&gt;</code>. Thymeleaf's Attoparser broke on the nested <code class="bg-white px-1 rounded">&lt;html&gt;</code> inside <code class="bg-white px-1 rounded">&lt;body&gt;</code>, outputting <code class="bg-white px-1 rounded">&lt;/th:block&gt;</code> as literal text and rendering all content twice. The main flex wrapper got <code class="bg-white px-1 rounded">width: 0px</code> breaking the entire mobile layout. Fix: move <code class="bg-white px-1 rounded">th:fragment</code> directly onto the <code class="bg-white px-1 rounded">&lt;html&gt;</code> element — the standard Thymeleaf pattern.
+      </div>
+    </div>
+
+    <!-- ===== DEPLOYMENT ===== -->
+    <div class="qa-card" data-cat="deployment">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 text-orange-600 text-xs font-bold flex items-center justify-center">16</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How is the app deployed?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-orange-50 border border-orange-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        <strong>Railway</strong> with auto-deploy on <code class="bg-white px-1 rounded">git push</code> to master. Railway detects the Maven wrapper, runs <code class="bg-white px-1 rounded">mvnw package</code>, and starts the JAR. Database is <strong>PostgreSQL on Supabase</strong>. Spring profile <code class="bg-white px-1 rounded">prod</code> activates the PostgreSQL datasource. The <code class="bg-white px-1 rounded">Procfile</code> / Railway start command runs the packaged JAR. Zero-downtime deploys — Railway spins up the new instance before terminating the old one.
+      </div>
+    </div>
+
+    <div class="qa-card" data-cat="deployment">
+      <button class="qa-toggle w-full text-left bg-white border border-gray-100 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition flex items-start justify-between gap-3 group">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 text-orange-600 text-xs font-bold flex items-center justify-center">17</span>
+          <span class="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">How do you manage database credentials securely?</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200"></i>
+      </button>
+      <div class="qa-answer hidden bg-orange-50 border border-orange-100 rounded-b-xl px-5 py-4 -mt-1 text-sm text-gray-700 leading-relaxed">
+        All secrets are in <strong>Railway environment variables</strong> — never hardcoded in source. <code class="bg-white px-1 rounded">application.properties</code> reads them via <code class="bg-white px-1 rounded">${DATABASE_URL}</code>, <code class="bg-white px-1 rounded">${DB_USERNAME}</code>, <code class="bg-white px-1 rounded">${DB_PASSWORD}</code> placeholders. The git repository contains no credentials. Local development uses a separate <code class="bg-white px-1 rounded">application-local.properties</code> that is gitignored.
+      </div>
+    </div>
+
+  </div><!-- end #qa-list -->
+
+  <script>
+    // Toggle individual Q&A
+    document.querySelectorAll('.qa-toggle').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var answer = this.parentElement.querySelector('.qa-answer');
+        var icon = this.querySelector('i.fa-chevron-down, i.fa-chevron-up');
+        var isOpen = !answer.classList.contains('hidden');
+        answer.classList.toggle('hidden');
+        if (icon) icon.className = isOpen ? 'fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200'
+                                           : 'fa-solid fa-chevron-up text-indigo-500 flex-shrink-0 mt-1 transition-transform duration-200';
+        // Round card bottom when open
+        this.classList.toggle('rounded-b-xl', !isOpen);
+        this.classList.toggle('rounded-xl', isOpen);
+      });
+    });
+
+    function expandAll() {
+      document.querySelectorAll('.qa-card:not([style*="display:none"]) .qa-answer').forEach(a => a.classList.remove('hidden'));
+      document.querySelectorAll('.qa-card:not([style*="display:none"]) .qa-toggle i').forEach(i => {
+        i.className = 'fa-solid fa-chevron-up text-indigo-500 flex-shrink-0 mt-1 transition-transform duration-200';
+      });
+    }
+    function collapseAll() {
+      document.querySelectorAll('.qa-answer').forEach(a => a.classList.add('hidden'));
+      document.querySelectorAll('.qa-toggle i').forEach(i => {
+        i.className = 'fa-solid fa-chevron-down text-gray-400 flex-shrink-0 mt-1 transition-transform duration-200';
+      });
+    }
+
+    // Category filter
+    function filterCat(cat) {
+      document.querySelectorAll('.cat-pill').forEach(p => {
+        p.classList.remove('active-pill', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
+        p.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+      });
+      var active = document.querySelector('[data-cat="' + cat + '"]');
+      if (active) {
+        active.classList.add('active-pill', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
+        active.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+      }
+      document.querySelectorAll('.qa-card').forEach(function(card) {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+      });
+    }
+  </script>
+
+</th:block>
+</body>
+</html>

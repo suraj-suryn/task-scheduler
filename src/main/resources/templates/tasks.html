@@ -336,6 +336,15 @@
       });
     }
   </script>
+  <script>
+    // Auto-open Add Task modal when ?add=1 in URL (from mobile + button on other pages)
+    (function() {
+      if (new URLSearchParams(window.location.search).get('add') === '1') {
+        var m = document.getElementById('add-task-modal');
+        if (m) m.classList.remove('hidden');
+      }
+    })();
+  </script>
 
 </th:block>
 </body>
