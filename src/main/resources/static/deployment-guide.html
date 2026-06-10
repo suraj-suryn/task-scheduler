@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Scheduler — Deployment Guide</title>
+  <style>
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 14px; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      line-height: 1.6;
+    }
+
+    /* ─── Print styles ─── */
+    @media print {
+      body { background: white; font-size: 11pt; }
+      .no-print { display: none !important; }
+      .page-break { page-break-before: always; }
+      .card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+      a { color: inherit; text-decoration: none; }
+      pre { white-space: pre-wrap; }
+    }
+
+    /* ─── Layout ─── */
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ─── Print button ─── */
+    .print-bar {
+      position: sticky; top: 0; z-index: 50;
+      background: #4f46e5; color: white;
+      padding: 0.6rem 1.5rem;
+      display: flex; align-items: center; justify-between;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+    }
+    .print-bar span { font-size: 0.85rem; opacity: 0.9; }
+    .print-btn {
+      background: white; color: #4f46e5;
+      border: none; border-radius: 6px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .print-btn:hover { opacity: 0.85; }
+
+    /* ─── Cover ─── */
+    .cover {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      margin-bottom: 2rem;
+    }
+    .cover-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .cover h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem; }
+    .cover .subtitle { font-size: 1rem; opacity: 0.85; margin-bottom: 1.5rem; }
+    .cover-meta { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .cover-badge {
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.78rem; font-weight: 600;
+    }
+
+    /* ─── TOC ─── */
+    .toc {
+      background: white; border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .toc h2 { font-size: 0.9rem; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .toc ol { padding-left: 1.2rem; }
+    .toc li { margin-bottom: 0.35rem; }
+    .toc a { color: #4f46e5; text-decoration: none; font-size: 0.88rem; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* ─── Section ─── */
+    .section { margin-bottom: 2.5rem; }
+    .section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid #e0e7ff;
+    }
+    .section-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #4f46e5; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 1.15rem; font-weight: 700; color: #1e293b; }
+
+    /* ─── Card ─── */
+    .card {
+      background: white; border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card h3 { font-size: 0.95rem; font-weight: 700; color: #334155; margin-bottom: 0.6rem; }
+    .card p, .card li { font-size: 0.88rem; color: #475569; }
+    .card ul, .card ol { padding-left: 1.2rem; }
+    .card li { margin-bottom: 0.3rem; }
+
+    /* ─── Step cards ─── */
+    .steps { display: flex; flex-direction: column; gap: 0.85rem; }
+    .step {
+      display: flex; gap: 1rem;
+      background: white; border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #e0e7ff; color: #4f46e5;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.78rem;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-body { flex: 1; }
+    .step-body h4 { font-size: 0.9rem; font-weight: 700; color: #1e293b; margin-bottom: 0.3rem; }
+    .step-body p, .step-body li { font-size: 0.85rem; color: #475569; }
+    .step-body ul { padding-left: 1rem; }
+    .step-body li { margin-bottom: 0.2rem; }
+
+    /* ─── Code blocks ─── */
+    pre {
+      background: #0f172a; color: #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.82rem;
+      font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+      overflow-x: auto;
+      margin: 0.6rem 0;
+      line-height: 1.5;
+    }
+    code {
+      background: #f1f5f9; color: #4f46e5;
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.82rem;
+      font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    }
+    pre code { background: none; color: inherit; padding: 0; }
+
+    /* ─── Comment lines in code ─── */
+    .cm { color: #64748b; }
+    .kw { color: #93c5fd; }
+    .str { color: #86efac; }
+    .val { color: #fca5a5; }
+
+    /* ─── Alert boxes ─── */
+    .alert {
+      border-radius: 8px; padding: 0.85rem 1rem;
+      font-size: 0.84rem; margin: 0.75rem 0;
+      display: flex; gap: 0.6rem; align-items: flex-start;
+    }
+    .alert-icon { flex-shrink: 0; font-size: 1rem; margin-top: 0.05rem; }
+    .alert-info  { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .alert-warn  { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .alert-ok    { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; }
+    .alert-danger{ background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
+
+    /* ─── Env table ─── */
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin: 0.5rem 0; }
+    th { background: #f1f5f9; color: #334155; font-weight: 700; text-align: left; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; }
+    td { padding: 0.45rem 0.75rem; border: 1px solid #e2e8f0; color: #475569; vertical-align: top; }
+    td code { font-size: 0.78rem; }
+    tr:nth-child(even) td { background: #f8fafc; }
+
+    /* ─── Tags ─── */
+    .tag {
+      display: inline-block;
+      border-radius: 4px; padding: 0.1rem 0.5rem;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin-right: 0.3rem;
+    }
+    .tag-req  { background: #fee2e2; color: #b91c1c; }
+    .tag-opt  { background: #fef9c3; color: #92400e; }
+    .tag-prod { background: #dcfce7; color: #15803d; }
+    .tag-dev  { background: #dbeafe; color: #1d4ed8; }
+
+    /* ─── Grid ─── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ─── Divider ─── */
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 2rem 0; }
+
+    /* ─── Footer ─── */
+    .footer { text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 3rem; }
+  </style>
+</head>
+<body>
+
+<!-- Print bar -->
+<div class="print-bar no-print">
+  <span>📄 Task Scheduler — Deployment Guide &nbsp;|&nbsp; Open in browser → File → Print → Save as PDF</span>
+  <button class="print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+</div>
+
+<div class="container">
+
+  <!-- ══════════════════════════════════════════════════ COVER -->
+  <div class="cover">
+    <div class="cover-icon">📅</div>
+    <h1>Task Scheduler</h1>
+    <p class="subtitle">Complete Deployment Guide — Server, Database, Cloud &amp; Local Setup</p>
+    <div class="cover-meta">
+      <span class="cover-badge">Spring Boot 3.5.11</span>
+      <span class="cover-badge">Java 17+</span>
+      <span class="cover-badge">PostgreSQL</span>
+      <span class="cover-badge">Railway / Any Cloud</span>
+      <span class="cover-badge">June 2026</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ TOC -->
+  <div class="toc">
+    <h2>📋 Table of Contents</h2>
+    <ol>
+      <li><a href="#s1">Prerequisites</a></li>
+      <li><a href="#s2">Project Structure Overview</a></li>
+      <li><a href="#s3">Local Development Setup</a></li>
+      <li><a href="#s4">Database Setup — H2 (Local) &amp; PostgreSQL (Production)</a></li>
+      <li><a href="#s5">Supabase PostgreSQL Configuration</a></li>
+      <li><a href="#s6">Application Properties Configuration</a></li>
+      <li><a href="#s7">Environment Variables Reference</a></li>
+      <li><a href="#s8">Email / SMTP Configuration (Optional)</a></li>
+      <li><a href="#s9">Build &amp; Package</a></li>
+      <li><a href="#s10">Railway Cloud Deployment (Step-by-Step)</a></li>
+      <li><a href="#s11">Deploying to Other Platforms</a></li>
+      <li><a href="#s12">Spring Security &amp; Admin Account Setup</a></li>
+      <li><a href="#s13">Swagger / API Docs Access</a></li>
+      <li><a href="#s14">Troubleshooting Common Issues</a></li>
+      <li><a href="#s15">Production Checklist</a></li>
+    </ol>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S1: PREREQUISITES -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>Prerequisites</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>🖥 Local Machine</h3>
+        <ul>
+          <li><strong>JDK 17 or higher</strong> — Java 17, 21, or 23 all work<br/><code>java -version</code></li>
+          <li><strong>Maven 3.6+</strong> — or use the included <code>mvnw</code> wrapper</li>
+          <li><strong>Git</strong> — for cloning and version control</li>
+          <li><strong>IDE</strong> — IntelliJ IDEA, VS Code with Java extensions, or Eclipse</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>☁ Cloud / Production</h3>
+        <ul>
+          <li><strong>GitHub account</strong> — for source repository</li>
+          <li><strong>Railway account</strong> — railway.app (free tier available)</li>
+          <li><strong>Supabase account</strong> — supabase.com (free PostgreSQL)</li>
+          <li><em>Alternatively: any cloud with Java runtime (Render, Fly.io, Heroku, AWS, GCP)</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ</span>
+      <div>The project includes <code>mvnw</code> and <code>mvnw.cmd</code> — Maven wrappers. You do <strong>not</strong> need Maven installed globally. Just use <code>./mvnw</code> (Linux/Mac) or <code>mvnw.cmd</code> (Windows).</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S2: STRUCTURE -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>Project Structure Overview</h2>
+    </div>
+    <div class="card">
+<pre>task-scheduler/
+├── src/main/java/com/suraj/scheduler/
+│   ├── TaskSchedulerApplication.java      <span class="cm"># Entry point (@SpringBootApplication)</span>
+│   ├── controller/
+│   │   ├── TaskController.java            <span class="cm"># Thymeleaf view controller</span>
+│   │   ├── TaskRestController.java        <span class="cm"># REST API (JSON)</span>
+│   │   ├── CategoryController.java
+│   │   ├── AdminController.java
+│   │   └── MiscController.java            <span class="cm"># /interview, misc pages</span>
+│   ├── service/impl/TaskServiceImpl.java  <span class="cm"># Business logic</span>
+│   ├── entity/                            <span class="cm"># JPA entities (Task, User, Category)</span>
+│   ├── repository/                        <span class="cm"># Spring Data JPA repositories</span>
+│   ├── security/                          <span class="cm"># SecurityConfig, UserDetailsService</span>
+│   ├── scheduler/TaskSchedulerEngine.java <span class="cm"># @Scheduled status transitions</span>
+│   └── dsa/                               <span class="cm"># IntervalTree, PriorityHeap, DependencyGraph</span>
+│
+├── src/main/resources/
+│   ├── application.properties             <span class="cm"># Default (local H2) config</span>
+│   ├── application-prod.properties        <span class="cm"># Production (PostgreSQL) config</span>
+│   ├── templates/                         <span class="cm"># Thymeleaf HTML templates</span>
+│   └── static/                            <span class="cm"># Static assets (CSS, JS, HTML)</span>
+│
+├── pom.xml                                <span class="cm"># Maven dependencies</span>
+├── mvnw / mvnw.cmd                        <span class="cm"># Maven wrapper scripts</span>
+└── README.md</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S3: LOCAL SETUP -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>Local Development Setup</h2>
+    </div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Clone the repository</h4>
+<pre>git clone https://github.com/suraj-suryn/task-scheduler.git
+cd task-scheduler</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Set JAVA_HOME (if JDK not on PATH)</h4>
+          <p><strong>Windows (PowerShell):</strong></p>
+<pre>$env:JAVA_HOME = "C:\Program Files\Java\jdk-23"
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+java -version   <span class="cm"># confirm version</span></pre>
+          <p><strong>Linux / macOS:</strong></p>
+<pre>export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export PATH=$JAVA_HOME/bin:$PATH</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Run the application (local H2 database — no setup needed)</h4>
+          <p><strong>Windows:</strong></p>
+<pre>.\mvnw.cmd spring-boot:run</pre>
+          <p><strong>Linux / macOS:</strong></p>
+<pre>./mvnw spring-boot:run</pre>
+          <p>App starts at <strong>http://localhost:8080</strong></p>
+          <p>H2 console at <strong>http://localhost:8080/h2-console</strong></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>First login — create your admin account</h4>
+          <ul>
+            <li>Go to <code>http://localhost:8080/register</code></li>
+            <li>Register a user — by default all users get <code>ROLE_USER</code></li>
+            <li>To promote to admin: open H2 Console at <code>/h2-console</code>, connect with JDBC URL <code>jdbc:h2:file:./data/tasksdb</code>, run: <code>UPDATE users SET role = 'ROLE_ADMIN' WHERE username = 'yourname';</code></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S4: DATABASE -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>Database Setup — H2 (Local) &amp; PostgreSQL (Production)</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>💾 H2 — Local Development</h3>
+        <p>H2 is an embedded in-memory/file database included in the project. <strong>No installation required.</strong></p>
+        <p style="margin-top:0.5rem;">The local database file is saved at <code>./data/tasksdb.mv.db</code> relative to where you run the app. Data persists across restarts.</p>
+        <p style="margin-top:0.5rem;">H2 Console URL: <code>http://localhost:8080/h2-console</code></p>
+        <table style="margin-top:0.5rem;">
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>JDBC URL</td><td><code>jdbc:h2:file:./data/tasksdb</code></td></tr>
+          <tr><td>Username</td><td><code>sa</code></td></tr>
+          <tr><td>Password</td><td><em>(blank)</em></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>🐘 PostgreSQL — Production</h3>
+        <p>PostgreSQL is used for cloud deployments. The project already includes the PostgreSQL JDBC driver in <code>pom.xml</code>.</p>
+        <p style="margin-top:0.5rem;">Activate via Spring profile <code>prod</code>:</p>
+<pre>SPRING_PROFILES_ACTIVE=prod</pre>
+        <p style="margin-top:0.5rem;">When the <code>prod</code> profile is active, <code>application-prod.properties</code> overrides the datasource to use PostgreSQL with connection string from <code>DATABASE_URL</code> env var.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S5: SUPABASE -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>Supabase PostgreSQL Configuration</h2>
+    </div>
+    <p style="color:#475569; font-size:0.88rem; margin-bottom:1rem;">Supabase provides a free-tier managed PostgreSQL database. Follow these steps to create and connect your database.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Create a Supabase project</h4>
+          <ul>
+            <li>Go to <strong>https://supabase.com</strong> → Sign up / Log in</li>
+            <li>Click <strong>New Project</strong></li>
+            <li>Choose your organization, give the project a name (e.g. <code>task-scheduler</code>)</li>
+            <li>Set a strong <strong>Database Password</strong> — save it, you'll need it</li>
+            <li>Select a region closest to your deployment (e.g. <em>ap-southeast-1</em> for Asia)</li>
+            <li>Click <strong>Create new project</strong> — takes ~2 minutes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Get the connection string</h4>
+          <ul>
+            <li>In your Supabase project → left sidebar → <strong>Project Settings</strong> → <strong>Database</strong></li>
+            <li>Scroll to <strong>Connection string</strong> section</li>
+            <li>Select tab: <strong>URI</strong></li>
+            <li>Copy the JDBC-compatible URL — it looks like:<br/>
+<pre>jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require</pre>
+            </li>
+            <li>Also note: <strong>User</strong> = <code>postgres.&lt;project-ref&gt;</code>, <strong>Password</strong> = what you set above</li>
+          </ul>
+          <div class="alert alert-warn">
+            <span class="alert-icon">⚠</span>
+            <div>Use the <strong>Session pooler</strong> connection (port 5432) for Spring Boot, <em>not</em> the Transaction pooler (port 6543). The Transaction pooler does not support JPA prepared statements well.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Schema creation — automatic</h4>
+          <p>Spring Boot with <code>spring.jpa.hibernate.ddl-auto=update</code> will <strong>automatically create all tables</strong> on first startup. You do not need to run any SQL scripts manually.</p>
+          <p style="margin-top:0.4rem;">Tables created: <code>users</code>, <code>tasks</code>, <code>categories</code></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Create the first admin user via SQL (after first startup)</h4>
+          <p>Go to Supabase → <strong>SQL Editor</strong> → run:</p>
+<pre><span class="cm">-- Promote a user to ROLE_ADMIN after they register</span>
+UPDATE users SET role = 'ROLE_ADMIN' WHERE username = 'your-username';</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S6: APP PROPERTIES -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>Application Properties Configuration</h2>
+    </div>
+
+    <div class="card">
+      <h3>📄 application.properties — Default (Local / H2)</h3>
+<pre><span class="cm"># ─── SERVER ───────────────────────────────────────────</span>
+server.port=8080
+
+<span class="cm"># ─── THYMELEAF ────────────────────────────────────────</span>
+spring.thymeleaf.cache=false   <span class="cm"># set true in production for performance</span>
+
+<span class="cm"># ─── H2 DATABASE (local dev) ──────────────────────────</span>
+spring.datasource.url=jdbc:h2:file:./data/tasksdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.driver-class-name=org.h2.Driver
+
+<span class="cm"># ─── JPA / HIBERNATE ──────────────────────────────────</span>
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+
+<span class="cm"># ─── H2 CONSOLE ───────────────────────────────────────</span>
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+
+<span class="cm"># ─── APP BASE URL (for email verification links) ──────</span>
+app.base-url=http://localhost:8080
+
+<span class="cm"># ─── SPRINGDOC / SWAGGER ──────────────────────────────</span>
+springdoc.packagesToScan=com.suraj.scheduler.controller
+springdoc.pathsToMatch=/api/**</pre>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3>📄 application-prod.properties — Production (PostgreSQL)</h3>
+      <p style="font-size:0.84rem; color:#475569; margin-bottom:0.6rem;">Create this file at <code>src/main/resources/application-prod.properties</code>. It is activated by setting <code>SPRING_PROFILES_ACTIVE=prod</code>.</p>
+<pre><span class="cm"># ─── SERVER ───────────────────────────────────────────</span>
+server.port=${PORT:8080}   <span class="cm"># Railway injects PORT env var automatically</span>
+
+<span class="cm"># ─── THYMELEAF ────────────────────────────────────────</span>
+spring.thymeleaf.cache=true
+
+<span class="cm"># ─── POSTGRESQL DATABASE ──────────────────────────────</span>
+spring.datasource.url=${DATABASE_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+<span class="cm"># ─── CONNECTION POOL (HikariCP) ───────────────────────</span>
+spring.datasource.hikari.maximum-pool-size=5
+spring.datasource.hikari.minimum-idle=1
+spring.datasource.hikari.connection-timeout=20000
+spring.datasource.hikari.idle-timeout=300000
+
+<span class="cm"># ─── JPA / HIBERNATE ──────────────────────────────────</span>
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+
+<span class="cm"># ─── DISABLE H2 CONSOLE in production ─────────────────</span>
+spring.h2.console.enabled=false
+
+<span class="cm"># ─── APP BASE URL ─────────────────────────────────────</span>
+app.base-url=${APP_BASE_URL:https://your-app.up.railway.app}
+
+<span class="cm"># ─── EMAIL ────────────────────────────────────────────</span>
+spring.mail.host=${MAIL_HOST:smtp.gmail.com}
+spring.mail.port=${MAIL_PORT:587}
+spring.mail.username=${MAIL_USERNAME:}
+spring.mail.password=${MAIL_PASSWORD:}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true</pre>
+    </div>
+
+    <div class="alert alert-danger">
+      <span class="alert-icon">🔒</span>
+      <div><strong>Never commit credentials to git.</strong> Use <code>${ENV_VAR_NAME}</code> placeholders in properties files. Real values go in Railway / your cloud platform's environment variables.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S7: ENV VARS -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2>Environment Variables Reference</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Example Value</th><th>Required?</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>SPRING_PROFILES_ACTIVE</code></td>
+          <td><code>prod</code></td>
+          <td><span class="tag tag-req">Required</span></td>
+          <td>Activates <code>application-prod.properties</code>. Without this, H2 is used.</td>
+        </tr>
+        <tr>
+          <td><code>DATABASE_URL</code></td>
+          <td><code>jdbc:postgresql://host:5432/postgres?sslmode=require</code></td>
+          <td><span class="tag tag-req">Required</span></td>
+          <td>Full JDBC URL to your PostgreSQL database (Supabase, Neon, RDS, etc.)</td>
+        </tr>
+        <tr>
+          <td><code>DB_USERNAME</code></td>
+          <td><code>postgres.abc123xyz</code></td>
+          <td><span class="tag tag-req">Required</span></td>
+          <td>Database username. Supabase uses <code>postgres.&lt;project-ref&gt;</code> format.</td>
+        </tr>
+        <tr>
+          <td><code>DB_PASSWORD</code></td>
+          <td><code>YourStrongPassword</code></td>
+          <td><span class="tag tag-req">Required</span></td>
+          <td>Database password set during Supabase project creation.</td>
+        </tr>
+        <tr>
+          <td><code>PORT</code></td>
+          <td><code>8080</code></td>
+          <td><span class="tag tag-prod">Auto-set by Railway</span></td>
+          <td>Railway injects this automatically. Referenced as <code>${PORT:8080}</code>.</td>
+        </tr>
+        <tr>
+          <td><code>APP_BASE_URL</code></td>
+          <td><code>https://task-scheduler-production.up.railway.app</code></td>
+          <td><span class="tag tag-opt">Optional</span></td>
+          <td>Used in email verification links. Set to your production domain.</td>
+        </tr>
+        <tr>
+          <td><code>MAIL_HOST</code></td>
+          <td><code>smtp.gmail.com</code></td>
+          <td><span class="tag tag-opt">Optional</span></td>
+          <td>SMTP server for email verification. Skip if email not needed.</td>
+        </tr>
+        <tr>
+          <td><code>MAIL_PORT</code></td>
+          <td><code>587</code></td>
+          <td><span class="tag tag-opt">Optional</span></td>
+          <td>SMTP port (587 for STARTTLS, 465 for SSL).</td>
+        </tr>
+        <tr>
+          <td><code>MAIL_USERNAME</code></td>
+          <td><code>your@gmail.com</code></td>
+          <td><span class="tag tag-opt">Optional</span></td>
+          <td>Gmail address used to send verification emails.</td>
+        </tr>
+        <tr>
+          <td><code>MAIL_PASSWORD</code></td>
+          <td><code>abcd efgh ijkl mnop</code></td>
+          <td><span class="tag tag-opt">Optional</span></td>
+          <td>Gmail App Password (not your regular password). Generate at myaccount.google.com/apppasswords</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S8: EMAIL -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2>Email / SMTP Configuration (Optional)</h2>
+    </div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Enable 2-Step Verification on your Google account</h4>
+          <p>Go to <strong>myaccount.google.com → Security → 2-Step Verification</strong> and enable it. This is required to generate an App Password.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Generate a Gmail App Password</h4>
+          <ul>
+            <li>Go to <strong>myaccount.google.com/apppasswords</strong></li>
+            <li>App name: <code>Task Scheduler</code></li>
+            <li>Copy the 16-character password generated (format: <code>xxxx xxxx xxxx xxxx</code>)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Set environment variables</h4>
+<pre>MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=abcd efgh ijkl mnop</pre>
+        </div>
+      </div>
+
+    </div>
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ</span>
+      <div>If email is not configured, the app still works — users just won't receive verification emails. You can manually enable accounts via the Admin Portal or direct database update.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S9: BUILD -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2>Build &amp; Package</h2>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Build a runnable JAR</h4>
+          <p><strong>Windows:</strong></p>
+<pre>.\mvnw.cmd clean package -DskipTests</pre>
+          <p><strong>Linux / macOS:</strong></p>
+<pre>./mvnw clean package -DskipTests</pre>
+          <p>Output: <code>target/task-scheduler-0.0.1-SNAPSHOT.jar</code></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Run the production JAR locally (to test)</h4>
+<pre>java -jar target/task-scheduler-0.0.1-SNAPSHOT.jar \
+  --spring.profiles.active=prod \
+  --DATABASE_URL=jdbc:postgresql://host:5432/postgres?sslmode=require \
+  --DB_USERNAME=postgres.xxx \
+  --DB_PASSWORD=yourpassword</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Run tests</h4>
+<pre>.\mvnw.cmd test       <span class="cm"># Windows</span>
+./mvnw test           <span class="cm"># Linux / macOS</span></pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S10: RAILWAY -->
+  <div class="section page-break" id="s10">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>Railway Cloud Deployment — Step-by-Step</h2>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Push your code to GitHub</h4>
+<pre>git init                          <span class="cm"># if not already a git repo</span>
+git add -A
+git commit -m "initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/task-scheduler.git
+git push -u origin master</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Create a Railway account and new project</h4>
+          <ul>
+            <li>Go to <strong>https://railway.app</strong> → Sign up with GitHub</li>
+            <li>Click <strong>New Project</strong> → <strong>Deploy from GitHub repo</strong></li>
+            <li>Authorize Railway to access your GitHub account</li>
+            <li>Select your <code>task-scheduler</code> repository</li>
+            <li>Click <strong>Deploy Now</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Configure environment variables in Railway</h4>
+          <p>In your Railway project → click your service → <strong>Variables</strong> tab → Add each:</p>
+          <table>
+            <tr><th>Name</th><th>Value</th></tr>
+            <tr><td><code>SPRING_PROFILES_ACTIVE</code></td><td><code>prod</code></td></tr>
+            <tr><td><code>DATABASE_URL</code></td><td><code>jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require</code></td></tr>
+            <tr><td><code>DB_USERNAME</code></td><td><code>postgres.your-project-ref</code></td></tr>
+            <tr><td><code>DB_PASSWORD</code></td><td><code>YourSupabasePassword</code></td></tr>
+            <tr><td><code>APP_BASE_URL</code></td><td><code>https://your-app.up.railway.app</code></td></tr>
+          </table>
+          <div class="alert alert-info" style="margin-top:0.6rem;">
+            <span class="alert-icon">ℹ</span>
+            <div>After adding variables, Railway automatically re-deploys. <code>PORT</code> is set automatically — do not add it manually.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Verify the deployment</h4>
+          <ul>
+            <li>Railway → your service → <strong>Deployments</strong> tab → watch build logs</li>
+            <li>Look for: <code>Started TaskSchedulerApplication in X.XXX seconds</code></li>
+            <li>Click the <strong>public URL</strong> generated by Railway (e.g. <code>https://task-scheduler-production-xxxx.up.railway.app</code>)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Set up auto-deploy on push</h4>
+          <p>Railway auto-deploys every time you push to the connected branch (master by default). To change the branch: Settings → Source → Branch.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Add a custom domain (optional)</h4>
+          <ul>
+            <li>Railway → your service → <strong>Settings</strong> → <strong>Domains</strong> → <strong>Add Custom Domain</strong></li>
+            <li>Enter your domain (e.g. <code>tasks.yourdomain.com</code>)</li>
+            <li>Add the CNAME record shown to your DNS provider</li>
+            <li>Railway provisions SSL automatically</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S11: OTHER PLATFORMS -->
+  <div class="section" id="s11">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>Deploying to Other Platforms</h2>
+    </div>
+
+    <div class="grid-2">
+
+      <div class="card">
+        <h3>🚀 Render.com</h3>
+        <ol>
+          <li>New → <strong>Web Service</strong> → connect GitHub repo</li>
+          <li>Runtime: <strong>Java</strong> (or Docker)</li>
+          <li>Build Command: <code>./mvnw clean package -DskipTests</code></li>
+          <li>Start Command: <code>java -jar target/*.jar</code></li>
+          <li>Add the same environment variables as Railway</li>
+          <li>Free tier: service sleeps after 15 min of inactivity</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>🪰 Fly.io</h3>
+        <ol>
+          <li>Install flyctl: <code>curl -L https://fly.io/install.sh | sh</code></li>
+          <li><code>fly auth login</code></li>
+          <li>In project root: <code>fly launch</code> → select region</li>
+          <li>Set secrets: <code>fly secrets set DATABASE_URL=... DB_USERNAME=... DB_PASSWORD=... SPRING_PROFILES_ACTIVE=prod</code></li>
+          <li><code>fly deploy</code></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>☁ AWS Elastic Beanstalk</h3>
+        <ol>
+          <li>Build JAR: <code>./mvnw package -DskipTests</code></li>
+          <li>AWS Console → Elastic Beanstalk → Create application</li>
+          <li>Platform: <strong>Java</strong> (Corretto 17)</li>
+          <li>Upload <code>target/*.jar</code> as the application archive</li>
+          <li>Configuration → Software → Environment properties → add all env vars</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>🐳 Docker</h3>
+        <p>Create a <code>Dockerfile</code> in project root:</p>
+<pre>FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]</pre>
+        <p style="margin-top:0.5rem;">Build &amp; run:</p>
+<pre>docker build -t task-scheduler .
+docker run -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e DATABASE_URL=... \
+  -e DB_USERNAME=... \
+  -e DB_PASSWORD=... \
+  task-scheduler</pre>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S12: SECURITY / ADMIN -->
+  <div class="section" id="s12">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2>Spring Security &amp; Admin Account Setup</h2>
+    </div>
+
+    <div class="card">
+      <h3>How authentication works</h3>
+      <ul>
+        <li>Registration at <code>/register</code> creates a <code>ROLE_USER</code> account</li>
+        <li>If email is configured, the user receives a verification email — they must click the link before logging in</li>
+        <li>If email is <em>not</em> configured, accounts are automatically enabled on registration</li>
+        <li>Login at <code>/login</code> with username &amp; password</li>
+        <li>Admin routes (<code>/admin/**</code>) require <code>ROLE_ADMIN</code></li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3>Promote a user to Admin</h3>
+      <p><strong>Option A — Via Supabase SQL Editor:</strong></p>
+<pre>UPDATE users SET role = 'ROLE_ADMIN' WHERE username = 'your-username';</pre>
+      <p style="margin-top:0.5rem;"><strong>Option B — Via H2 Console (local):</strong><br/>
+        Connect to <code>jdbc:h2:file:./data/tasksdb</code> and run the same query.</p>
+      <p style="margin-top:0.5rem;"><strong>Option C — Once admin exists:</strong><br/>
+        Admin Portal → Manage Users → change role via dropdown.</p>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3>Permitted URLs (no login required)</h3>
+      <table>
+        <tr><th>Path</th><th>Purpose</th></tr>
+        <tr><td><code>/login</code>, <code>/register</code>, <code>/verify-email</code></td><td>Auth pages</td></tr>
+        <tr><td><code>/css/**</code>, <code>/js/**</code>, <code>/images/**</code></td><td>Static assets</td></tr>
+        <tr><td><code>/demo.html</code></td><td>Demo / documentation page</td></tr>
+        <tr><td><code>/interview</code></td><td>Interview Q&amp;A page</td></tr>
+        <tr><td><code>/swagger-ui/**</code>, <code>/v3/api-docs/**</code></td><td>API documentation</td></tr>
+        <tr><td><code>/h2-console/**</code></td><td>H2 database console (local only)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S13: SWAGGER -->
+  <div class="section" id="s13">
+    <div class="section-header">
+      <div class="section-num">13</div>
+      <h2>Swagger / API Docs Access</h2>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Swagger UI</h3>
+        <p>Interactive API explorer — no login required:</p>
+        <p><code>http://localhost:8080/swagger-ui/index.html</code></p>
+        <p style="margin-top:0.4rem;">Or on production:<br/><code>https://your-app.up.railway.app/swagger-ui/index.html</code></p>
+      </div>
+      <div class="card">
+        <h3>OpenAPI JSON</h3>
+        <p>Raw OpenAPI 3 specification:</p>
+        <p><code>http://localhost:8080/v3/api-docs</code></p>
+        <p style="margin-top:0.4rem;">Import into Postman: <strong>File → Import → Link</strong> → paste the URL</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S14: TROUBLESHOOTING -->
+  <div class="section" id="s14">
+    <div class="section-header">
+      <div class="section-num">14</div>
+      <h2>Troubleshooting Common Issues</h2>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">!</div>
+        <div class="step-body">
+          <h4>App starts but shows "Whitelabel Error Page" on /</h4>
+          <p>No mapping for <code>/</code>. Navigate to <code>/dashboard</code> or <code>/login</code> instead. Or check if the app is starting on a different port.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">!</div>
+        <div class="step-body">
+          <h4>PostgreSQL connection refused / SSL error</h4>
+          <ul>
+            <li>Ensure <code>?sslmode=require</code> is appended to DATABASE_URL</li>
+            <li>Supabase: use port <strong>5432</strong> (Session pooler), not 6543</li>
+            <li>Check DB_USERNAME format: <code>postgres.your-project-ref</code> (note the dot)</li>
+            <li>Verify DB_PASSWORD has no leading/trailing spaces</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">!</div>
+        <div class="step-body">
+          <h4>java.lang.UnsupportedClassVersionError</h4>
+          <p>The JDK version used to build is newer than the JRE used to run. Ensure JAVA_HOME points to JDK 17+. The project requires Java 17 minimum (<code>&lt;java.version&gt;17&lt;/java.version&gt;</code> in pom.xml).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">!</div>
+        <div class="step-body">
+          <h4>Railway build fails: "mvnw: Permission denied"</h4>
+<pre>git update-index --chmod=+x mvnw
+git commit -m "fix: make mvnw executable"
+git push</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">!</div>
+        <div class="step-body">
+          <h4>Can't log in after registering (email not enabled)</h4>
+          <p>If email/SMTP is not configured, the verification link is never sent. Fix: connect to the database and run:</p>
+<pre>UPDATE users SET enabled = true WHERE username = 'your-username';</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">!</div>
+        <div class="step-body">
+          <h4>H2 Console shows "Database not found"</h4>
+          <p>Use the full JDBC URL exactly: <code>jdbc:h2:file:./data/tasksdb</code>. The path is relative to where you run the JAR, not the project root. Make sure to run from the project root directory.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">!</div>
+        <div class="step-body">
+          <h4>Supabase "too many connections"</h4>
+          <p>Supabase free tier has a connection limit (~20 total). Reduce HikariCP pool size in <code>application-prod.properties</code>:</p>
+<pre>spring.datasource.hikari.maximum-pool-size=3
+spring.datasource.hikari.minimum-idle=1</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ S15: CHECKLIST -->
+  <div class="section" id="s15">
+    <div class="section-header">
+      <div class="section-num">15</div>
+      <h2>Production Checklist</h2>
+    </div>
+
+    <div class="card">
+      <table>
+        <tr><th style="width:36px;">✓</th><th>Item</th><th>Notes</th></tr>
+        <tr><td>☐</td><td>Code pushed to GitHub</td><td>All changes committed and pushed to master</td></tr>
+        <tr><td>☐</td><td>Supabase project created</td><td>Region selected, DB password saved</td></tr>
+        <tr><td>☐</td><td>DATABASE_URL set in Railway</td><td>Includes <code>?sslmode=require</code>, port 5432</td></tr>
+        <tr><td>☐</td><td>DB_USERNAME &amp; DB_PASSWORD set</td><td>Correct Supabase user format</td></tr>
+        <tr><td>☐</td><td>SPRING_PROFILES_ACTIVE=prod</td><td>Switches to PostgreSQL config</td></tr>
+        <tr><td>☐</td><td>APP_BASE_URL set to production URL</td><td>For correct email verification links</td></tr>
+        <tr><td>☐</td><td>First admin account promoted</td><td>Via Supabase SQL Editor</td></tr>
+        <tr><td>☐</td><td>H2 console disabled in prod</td><td><code>spring.h2.console.enabled=false</code> in prod profile</td></tr>
+        <tr><td>☐</td><td>Thymeleaf cache enabled in prod</td><td><code>spring.thymeleaf.cache=true</code></td></tr>
+        <tr><td>☐</td><td>No credentials in git history</td><td>Run <code>git log</code> and verify</td></tr>
+        <tr><td>☐</td><td>Deployment logs show clean startup</td><td>"Started TaskSchedulerApplication"</td></tr>
+        <tr><td>☐</td><td>Login/register flow works on prod URL</td><td>Test with a new browser session</td></tr>
+        <tr><td>☐</td><td>HTTPS enforced</td><td>Railway provides SSL automatically</td></tr>
+        <tr><td>☐</td><td>Email verification works (if configured)</td><td>Register → check inbox → click link</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr/>
+  <div class="footer">
+    <p>Task Scheduler — Deployment Guide &nbsp;|&nbsp; Spring Boot 3.5.11 · Java 17+ · PostgreSQL · Railway</p>
+    <p style="margin-top:0.3rem;">Generated June 2026 &nbsp;|&nbsp; <strong>Print this page (Ctrl+P) to save as PDF</strong></p>
+  </div>
+
+</div><!-- /container -->
+
+</body>
+</html>

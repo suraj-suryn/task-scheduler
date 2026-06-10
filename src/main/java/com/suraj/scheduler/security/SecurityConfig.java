@@ -39,7 +39,7 @@ public class SecurityConfig {
         http
             .authenticationProvider(authProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/register", "/login", "/verify-email", "/css/**", "/js/**", "/images/**", "/demo.html", "/interview").permitAll()
+                .requestMatchers("/register", "/login", "/verify-email", "/css/**", "/js/**", "/images/**", "/demo.html", "/interview", "/deployment-guide.html").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
